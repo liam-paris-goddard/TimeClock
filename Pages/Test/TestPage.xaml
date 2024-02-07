@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<app:UntimedContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:app="clr-namespace:TimeClock"
+    xmlns:controls="clr-namespace:TimeClock.Controls;assembly=TimeClock"
+    x:Class="TimeClock.TestPage">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style
+                TargetType="controls:GoddardButton">
+                <Setter 
+                    Property="HorizontalOptions"
+                    Value="Center"/>
+                <Setter
+                    Property="FontSize"
+                    Value="18" />
+                <Setter
+                    Property="HeightRequest"
+                    Value="70" />
+                <Setter
+                    Property="WidthRequest"
+                    Value="160" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <StackLayout
+        VerticalOptions="Center"
+        Spacing="20">
+
+        <controls:GoddardButton
+            Image="home-large.png"
+            VerticalOptions="Center"
+            Command="{Binding GoHomeCommand}"
+            Margin="0, 0, 0, 0">
+            <controls:GoddardButton.WidthRequest>
+                <OnPlatform
+                    x:TypeArguments="x:Double"
+                    iOS="48"
+                    Android="48"
+                    WinPhone="60" />
+            </controls:GoddardButton.WidthRequest>
+            <controls:GoddardButton.HeightRequest>
+                <OnPlatform
+                    x:TypeArguments="x:Double"
+                    iOS="48"
+                    Android="48"
+                    WinPhone="60" />
+            </controls:GoddardButton.HeightRequest>
+        </controls:GoddardButton>
+
+        <controls:GoddardButton
+            Text="PREVIOUS"
+            Image="back.png" />
+
+        <controls:GoddardButton
+            Text="short"
+            Image="back.png" />
+        
+        <controls:GoddardButton
+            Text="long long long long long long long long"
+            Image="back.png" />
+
+        <controls:GoddardButton
+            Text="Some text"></controls:GoddardButton>
+
+        <controls:GoddardButton
+            Text="Some longer text"></controls:GoddardButton>
+
+        <controls:GoddardButton
+            Text="Some text that is really really"></controls:GoddardButton>
+
+    </StackLayout>
+
+</app:UntimedContentPage>
+    

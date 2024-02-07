@@ -1,10 +1,5 @@
-﻿/*
-
-TODO -- all of this
-
-using Goddard.Clock.Data;
-using Goddard.Clock.Models;
-using Plugin.Connectivity;
+﻿using TimeClock.Data;
+using TimeClock.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,9 +7,10 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Xamarin.Forms;
-
-namespace Goddard.Clock.Helpers
+using Microsoft.Maui.Controls;
+using System.Net.NetworkInformation;
+using Microsoft.Maui.Networking;
+namespace TimeClock.Helpers
 {
     //implemented with singleton pattern
     public sealed class SyncEngine
@@ -37,7 +33,7 @@ namespace Goddard.Clock.Helpers
         private static readonly int _SendInterval = 5 * 60 * 1000; //5 minutes    
         private static readonly int _MaintenanceInterval = 24 * 60 * 60 * 1000; //one day        
 
-        private static readonly int _MaximumSendLoopCount = 10;  
+        private static readonly int _MaximumSendLoopCount = 10;
 
         public enum SyncEngineLogType
         {
@@ -49,7 +45,7 @@ namespace Goddard.Clock.Helpers
 
         public void Log(SyncEngineLogType type, string message)
         {
-            //TODO: do we want to do something more advanced here?
+            //xTODO: do we want to do something more advanced here?
             Debug.WriteLine("SyncEngine " + type.ToString().ToUpper() + ": " + message);
             OnSyncEngineLog(new SyncEngineLogEventArgs(message, type, DateTime.Now));
         }
@@ -123,14 +119,14 @@ namespace Goddard.Clock.Helpers
                         return IsStarted;
                     });
 
-                    CrossConnectivity.Current.ConnectivityChanged += Current_ConnectivityChanged;
+                    Connectivity.ConnectivityChanged += Current_ConnectivityChanged;
                 }
             }
         }
 
-        private void Current_ConnectivityChanged(object sender, Plugin.Connectivity.Abstractions.ConnectivityChangedEventArgs e)
+        private void Current_ConnectivityChanged(object sender, ConnectivityChangedEventArgs args)
         {
-            if (e.IsConnected)
+            if (args.IsConnected)
             {
                 Start();
             }
@@ -145,7 +141,7 @@ namespace Goddard.Clock.Helpers
             using (await _instanceLock.LockAsync())
             {
                 IsStarted = false;
-                CrossConnectivity.Current.ConnectivityChanged -= Current_ConnectivityChanged;
+                Connectivity.ConnectivityChanged -= Current_ConnectivityChanged;
             }
         }
 
@@ -182,7 +178,7 @@ namespace Goddard.Clock.Helpers
 
                     await App.Database.CompactDatabase();
 
-                    //TODO: give alert to server for any records that are old but never processed?  can that even happen in theory?
+                    //xTODO: give alert to server for any records that are old but never processed?  can that even happen in theory?
                     //seems like the only way it could happen is if the clock has been offline for more than the window
                     //and then we're not going to get the alert anyway, so maybe if anything, it should show some kind of 
                     //blocking alert on the device itself to alert the local staff?
@@ -195,12 +191,12 @@ namespace Goddard.Clock.Helpers
             }
             catch (Exception ex)
             {
-                Goddard.Clock.Helpers.Logging.Log(ex);
+                TimeClock.Helpers.Logging.Log(ex);
                 return false;
             }
         }
 
-        //TODO: while there is every reason to believe that this code is fundamentally correct
+        //xTODO: while there is every reason to believe that this code is fundamentally correct
         //the truth is that at the time of writing there is no way to generate substantial amounts
         //of data for any meaningful level of testing, so this should definitely be rechecked
         //carefully once that has changed
@@ -215,9 +211,9 @@ namespace Goddard.Clock.Helpers
                     var myStopwatch = Stopwatch.StartNew();
 
                     var result = false;
-                    if (CrossConnectivity.Current.IsConnected)
+                    if (Connectivity.NetworkAccess == NetworkAccess.Internet)
                     {
-                        //TODO: address scenario where if web api throws exception this will just continually
+                        //xTODO: address scenario where if web api throws exception this will just continually
                         //loop retrying bad data input
                         var pins = await App.Database.GetUnprocessedUpdatePINs(_WEBSERVICE_BATCH_SIZE);
                         var events = await App.Database.GetUnprocessedClockEvents(_WEBSERVICE_BATCH_SIZE);
@@ -231,7 +227,7 @@ namespace Goddard.Clock.Helpers
                                 var allEntities = new List<LocalEntity>();
                                 allEntities.AddRange(myData.Events.ToList<LocalEntity>());
                                 allEntities.AddRange(myData.UpdatePINs.ToList<LocalEntity>());
-                                await App.Database.SetLocalEntitiesUploaded(allEntities, DateTime.Now);                    
+                                await App.Database.SetLocalEntitiesUploaded(allEntities, DateTime.Now);
                             }
 
                             pins = await App.Database.GetUnprocessedUpdatePINs(_WEBSERVICE_BATCH_SIZE);
@@ -243,7 +239,7 @@ namespace Goddard.Clock.Helpers
                         var logs = await App.Database.GetUnprocessedLogs(_WEBSERVICE_BATCH_SIZE);
                         loop_counter = 0;
                         while (logs.Count > 0 && loop_counter < _MaximumSendLoopCount)
-                        {                                                                    
+                        {
                             var upload = await new RestService().SendLogs(logs.ToArray());
                             if (upload)
                             {
@@ -268,7 +264,7 @@ namespace Goddard.Clock.Helpers
             }
             catch (Exception ex)
             {
-                Goddard.Clock.Helpers.Logging.Log(ex);
+                TimeClock.Helpers.Logging.Log(ex);
                 return false;
             }
         }
@@ -285,7 +281,7 @@ namespace Goddard.Clock.Helpers
                     var myStopwatch = Stopwatch.StartNew();
 
                     var result = false;
-                    if (CrossConnectivity.Current.IsConnected)
+                    if (Connectivity.NetworkAccess == NetworkAccess.Internet)
                     {
                         var data = await new RestService().GetSyncData(Helpers.Settings.LastSelectedSchoolID);
 
@@ -311,16 +307,16 @@ namespace Goddard.Clock.Helpers
             }
             catch (Exception ex)
             {
-                Goddard.Clock.Helpers.Logging.Log(ex);
+                TimeClock.Helpers.Logging.Log(ex);
                 return false;
             }
         }
 
-        //TODO: this https://developer.xamarin.com/guides/xamarin-forms/messaging-center/
+        //xTODO: this https://developer.xamarin.com/guides/xamarin-forms/messaging-center/
         //may be a "better" way to handle this since it seems more geared towards multiple
         //totally de-coupled things to be made aware of events
 
-        //TODO: the application should subscribe to these two events and do something
+        //xTODO: the application should subscribe to these two events and do something
         //to stall/block user action during the pulldown since the user interacting with
         //the data during that could cause problems, one basic idea would be to put up
         //a blocking wait spinner for Started and remove it for Finished
@@ -338,7 +334,7 @@ namespace Goddard.Clock.Helpers
                 PullRemoteFinished(this, e);
         }
 
-        //TODO: sending is probably not going to require any blocking of the user
+        //xTODO: sending is probably not going to require any blocking of the user
         //so these events are mainly provided for the sake of OCD or if we want to implement
         //some kind of logging
         public event EventHandler SendRemoteStarted;
@@ -354,7 +350,7 @@ namespace Goddard.Clock.Helpers
                 SendRemoteFinished(this, e);
         }
 
-        //TODO: again for sake of OCD
+        //xTODO: again for sake of OCD
         public event EventHandler MaintenanceStarted;
         public event EventHandler MaintenanceFinished;
         private void OnMaintenanceStarted(EventArgs e)
@@ -391,7 +387,7 @@ namespace Goddard.Clock.Helpers
 
         public delegate void SyncEngineLogEventHandler(Object sender, SyncEngineLogEventArgs e);
 
-        //TODO: whatever the main app code uses for logging should probably subscribe to this event
+        //xTODO: whatever the main app code uses for logging should probably subscribe to this event
         public event SyncEngineLogEventHandler SyncEngineLog;
         private void OnSyncEngineLog(SyncEngineLogEventArgs e)
         {
@@ -401,5 +397,3 @@ namespace Goddard.Clock.Helpers
 
     }
 }
-
-*/

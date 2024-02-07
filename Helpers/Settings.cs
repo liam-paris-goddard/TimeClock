@@ -1,6 +1,5 @@
 using System;
-using Microsoft.Maui.Essentials;
-
+using Microsoft.Maui;
 namespace TimeClock.Helpers
 {
     public static class Settings
@@ -152,7 +151,7 @@ namespace TimeClock.Helpers
 }
 
 /**
-TODO 
+ TODO - consider
 
 hardcoded-credentials Embedding credentials in source code risks unauthorized access
 clear-text-storage-of-sensitive-data

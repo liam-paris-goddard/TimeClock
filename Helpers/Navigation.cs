@@ -29,6 +29,6 @@ namespace TimeClock.Helpers
 }
 
 /**
-TODO
+ TODO - consider
 Please note that you'll need to replace HomePage with the actual root page of your .NET MAUI application. Also, ensure that your HomePage is a Page type, not a View type.
 */

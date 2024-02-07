@@ -1,11 +1,12 @@
-﻿using Foundation;
+using Foundation;
 using TimeClock.Helpers;
+using Microsoft.Maui;
+using Microsoft.Maui.Controls;
 using System;
 using System.Diagnostics;
 using UIKit;
-using Microsoft.Maui;
+using System.Security.Cryptography;
 
-[assembly: Dependency(typeof(AutoUpdateHelper))]
 namespace TimeClock.iOS.Helpers
 {
     public class AutoUpdateHelper : IAutoUpdateHelper
@@ -57,6 +58,8 @@ namespace TimeClock.iOS.Helpers
             return false;
         }
 
+
+
         public bool IsFirstVersionArgumentLater(string first, string second)
         {
             Debug.WriteLine(String.Format("Comparing App Versions - First: {0} - Second: {1}", first, second));
@@ -79,12 +82,28 @@ namespace TimeClock.iOS.Helpers
 }
 
 
-/*
-TODO
+/** 
 
-The main change here is updating the namespace to Goddard.Clock.Platforms.iOS.Helpers to reflect the new .NET MAUI project structure.
+todo - consider
 
-Please note that the IAutoUpdateHelper interface and the ConstantsStatics class are not defined in the provided code. If these are part of your Xamarin.Forms application, they will also need to be updated for .NET MAUI.
+need to add to startup.Cs
 
-Also, the Dependency attribute is used for dependency injection in Xamarin.Forms. .NET MAUI introduces a new service-based dependency injection system which you might want to consider using.
-*/
+using TimeClock.iOS.Helpers;
+using Microsoft.Maui;
+using Microsoft.Maui.Hosting;
+
+namespace TimeClock
+{
+    public class Startup : IStartup
+    {
+        public void Configure(IAppHostBuilder appBuilder)
+        {
+            appBuilder
+                .UseMauiApp<App>()
+                .ConfigureServices(services =>
+                {
+                    services.AddSingleton<IAutoUpdateHelper, AutoUpdateHelper>();
+                });
+        }
+    }
+}*/

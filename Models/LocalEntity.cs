@@ -10,16 +10,16 @@ namespace TimeClock.Models
         public long ID { get; init; }
 
         [IgnoreDataMember]
-        public DateTime Inserted { get; init; }
+        public DateTime Inserted { get; set; }
 
         [IgnoreDataMember]
-        public DateTime Updated { get; init; }
+        public DateTime Updated { get; set; }
 
         [IgnoreDataMember]
         public bool IsDeleted { get; init; }
 
         [IgnoreDataMember]
-        public DateTime? Uploaded { get; init; }
+        public DateTime? Uploaded { get; set; }
 
         public LocalEntity()
         {
@@ -31,8 +31,8 @@ namespace TimeClock.Models
 
     public interface IPerson
     {
-        long PersonID { get; init; }
-        string LN { get; init; }
-        string FN { get; init; }
+        long PersonID { get; set; }
+        string LN { get; set; }
+        string FN { get; set; }
     }
 }

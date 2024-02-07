@@ -9,19 +9,19 @@ namespace TimeClock.Models
         public Employee() : base() { }
 
         [Indexed]
-        public string FN { get; init; }
+        public string FN { get; set; }
 
         [Indexed]
-        public string LN { get; init; }
+        public string LN { get; set; }
 
         [Indexed]
-        public string PIN { get; init; }
+        public string PIN { get; set; }
 
-        public DateTime? ForceResetPIN { get; init; }
+        public DateTime? ForceResetPIN { get; set; }
 
-        public bool LockedPIN { get; init; }
+        public bool LockedPIN { get; set; }
 
-        public bool AllowChildClockInOut { get; init; }
+        public bool AllowChildClockInOut { get; set; }
 
         [Ignore]
         [IgnoreDataMember]
@@ -33,6 +33,6 @@ namespace TimeClock.Models
 
         [Indexed(Unique = true)]
         [Unique]
-        public long PersonID { get; init; }
+        public long PersonID { get; set; }
     }
 }

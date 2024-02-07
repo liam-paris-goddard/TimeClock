@@ -1,0 +1,387 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\Goddard.Xamarin\packages\Xamarin.Forms.4.5.0.617\build\Xamarin.Forms.props" Condition="Exists('..\..\Goddard.Xamarin\packages\Xamarin.Forms.4.5.0.617\build\Xamarin.Forms.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{7EE8BA7C-F8F6-4FC2-90CC-892A26EB837D}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TimeClock</RootNamespace>
+    <AssemblyName>TimeClock</AssemblyName>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Profile259</TargetFrameworkProfile>
+    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="AdminLoginPage.xaml.cs">
+      <DependentUpon>AdminLoginPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="AdminLoginPageViewModel.cs" />
+    <Compile Include="AdminPage.xaml.cs">
+      <DependentUpon>AdminPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="AdminPageViewModel.cs" />
+    <Compile Include="BsConverter.cs" />
+    <Compile Include="CheckInPage.xaml.cs">
+      <DependentUpon>CheckInPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\BorderlessEntry.cs" />
+    <Compile Include="Controls\CheckInSelector.xaml.cs">
+      <DependentUpon>CheckInSelector.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\GoddardFrame.cs" />
+    <Compile Include="Controls\GoddardButton.cs" />
+    <Compile Include="Controls\BorderedEntry.cs" />
+    <Compile Include="Controls\PagedGoddardButtonGrid.xaml.cs">
+      <DependentUpon>PagedGoddardButtonGrid.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\PageFooter.xaml.cs">
+      <DependentUpon>PageFooter.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\PageHeader.xaml.cs">
+      <DependentUpon>PageHeader.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\PageHeaderViewModel.cs" />
+    <Compile Include="Data\ClockDatabase.cs" />
+    <Compile Include="Data\RestService.cs" />
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ConstantsStatics.cs" />
+    <Compile Include="ChildSelectionPage.xaml.cs">
+      <DependentUpon>ChildSelectionPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ChildSelectionPageViewModel.cs" />
+    <Compile Include="GlobalResources.cs" />
+    <Compile Include="Helpers\IAutoUpdateHelper.cs" />
+    <Compile Include="Helpers\Logging.cs" />
+    <Compile Include="Helpers\Navigation.cs" />
+    <Compile Include="Helpers\UserMessages.cs" />
+    <Compile Include="ParentSelectionPageViewModel.cs" />
+    <Compile Include="ParentSelectionPage.xaml.cs">
+      <DependentUpon>ParentSelectionPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="EmployeeSelectionPage.xaml.cs">
+      <DependentUpon>EmployeeSelectionPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Helpers\AsyncLock.cs" />
+    <Compile Include="Helpers\BaseViewModel.cs" />
+    <Compile Include="Helpers\Crypto.cs" />
+    <Compile Include="Helpers\IFileHelper.cs" />
+    <Compile Include="Helpers\PointExtensions.cs" />
+    <Compile Include="Helpers\RetryHelper.cs" />
+    <Compile Include="Helpers\InjectExtension.cs" />
+    <Compile Include="Helpers\Settings.cs" />
+    <Compile Include="Helpers\SyncEngine.cs" />
+    <Compile Include="LoginPage.xaml.cs">
+      <DependentUpon>LoginPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="PreCheckInPage.xaml.cs">
+      <DependentUpon>PreCheckInPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SchoolSelectionPage.xaml.cs">
+      <DependentUpon>SchoolSelectionPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="EmployeeSelectionPageViewModel.cs" />
+    <Compile Include="StateSelectionPageViewModel.cs" />
+    <Compile Include="SchoolSelectionPageViewModel.cs" />
+    <Compile Include="LoginPageViewModel.cs" />
+    <Compile Include="HomePage.xaml.cs">
+      <DependentUpon>HomePage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="PinPadPage.xaml.cs">
+      <DependentUpon>PinPadPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Controls\LetterButtons.xaml.cs">
+      <DependentUpon>LetterButtons.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="StateSelectionPage.xaml.cs">
+      <DependentUpon>StateSelectionPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="TestPage.xaml.cs">
+      <DependentUpon>TestPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="TimedContentPage.xaml.cs">
+      <DependentUpon>TimedContentPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UntimedContentPage.xaml.cs">
+      <DependentUpon>UntimedContentPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserMessagePage.xaml.cs">
+      <DependentUpon>UserMessagePage.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  
+  <ItemGroup>
+    <EmbeddedResource Include="HomePage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="App.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TimeClock.Models\TimeClock.Models.csproj">
+      <Project>{e5495034-b701-48e4-84ed-02c8221357ff}</Project>
+      <Name>TimeClock.Models</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="LoginPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="PinPadPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Controls\LetterButtons.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Controls\PageHeader.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Controls\PageFooter.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="StateSelectionPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="SchoolSelectionPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="AdminPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="AdminLoginPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Controls\PagedGoddardButtonGrid.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="EmployeeSelectionPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="PreCheckInPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="FubarCoder.RestSharp.Portable.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=be81bb0f53eab22f, processorArchitecture=MSIL">
+      <HintPath>..\..\Goddard.Xamarin\packages\FubarCoder.RestSharp.Portable.Core.4.0.8\lib\portable45-net45+win8+wp8+wpa81\FubarCoder.RestSharp.Portable.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="FubarCoder.RestSharp.Portable.HttpClient, Version=4.0.0.0, Culture=neutral, PublicKeyToken=be81bb0f53eab22f, processorArchitecture=MSIL">
+      <HintPath>..\..\Goddard.Xamarin\packages\FubarCoder.RestSharp.Portable.HttpClient.4.0.8\lib\portable45-net45+win8+wp8+wpa81\FubarCoder.RestSharp.Portable.HttpClient.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\Goddard.Xamarin\packages\CommonServiceLocator.1.3\lib\portable-net4+sl5+netcore45+wpa81+wp8\Microsoft.Practices.ServiceLocation.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=6d32ff45e0ccc69f, processorArchitecture=MSIL">
+      <HintPath>..\..\Goddard.Xamarin\packages\Unity.4.0.1\lib\portable-net45+wp80+win8+wpa81+MonoAndroid10+MonoTouch10\Microsoft.Practices.Unity.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\Goddard.Xamarin\packages\Newtonsoft.Json.12.0.2\lib\portable-net45+win8+wp8+wpa81\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="PCLStorage, Version=1.0.2.0, Culture=neutral, PublicKeyToken=286fe515a2c35b64, processorArchitecture=MSIL">
+      <HintPath>..\..\Goddard.Xamarin\packages\PCLStorage.1.0.2\lib\portable-net45+wp8+wpa81+win8+monoandroid+monotouch+Xamarin.iOS+Xamarin.Mac\PCLStorage.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="PCLStorage.Abstractions, Version=1.0.2.0, Culture=neutral, PublicKeyToken=286fe515a2c35b64, processorArchitecture=MSIL">
+      <HintPath>..\..\Goddard.Xamarin\packages\PCLStorage.1.0.2\lib\portable-net45+wp8+wpa81+win8+monoandroid+monotouch+Xamarin.iOS+Xamarin.Mac\PCLStorage.Abstractions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Plugin.Connectivity, Version=3.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\Goddard.Xamarin\packages\Xam.Plugin.Connectivity.3.2.0\lib\netstandard1.0\Plugin.Connectivity.dll</HintPath>
+    </Reference>
+    <Reference Include="Plugin.Connectivity.Abstractions, Version=3.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\Goddard.Xamarin\packages\Xam.Plugin.Connectivity.3.2.0\lib\netstandard1.0\Plugin.Connectivity.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Plugin.DeviceInfo, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\Goddard.Xamarin\packages\Xam.Plugin.DeviceInfo.4.1.1\lib\netstandard1.0\Plugin.DeviceInfo.dll</HintPath>
+    </Reference>
+    <Reference Include="Plugin.SecureStorage, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\Goddard.Xamarin\packages\sameerIOTApps.Plugin.SecureStorage.1.2.2\lib\portable-net45+wp8+wpa81+win8+MonoAndroid10+MonoTouch10+Xamarin.iOS10\Plugin.SecureStorage.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Plugin.SecureStorage.Abstractions, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\Goddard.Xamarin\packages\sameerIOTApps.Plugin.SecureStorage.1.2.2\lib\portable-net45+wp8+wpa81+win8+MonoAndroid10+MonoTouch10+Xamarin.iOS10\Plugin.SecureStorage.Abstractions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Plugin.Settings, Version=2.5.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\Goddard.Xamarin\packages\Xam.Plugins.Settings.2.5.4\lib\portable-net45+wp80+win8+wpa81\Plugin.Settings.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Plugin.Settings.Abstractions, Version=2.5.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\Goddard.Xamarin\packages\Xam.Plugins.Settings.2.5.4\lib\portable-net45+wp80+win8+wpa81\Plugin.Settings.Abstractions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SignaturePad.Forms, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\Goddard.Xamarin\packages\Xamarin.Controls.SignaturePad.Forms.3.0.0\lib\netstandard1.0\SignaturePad.Forms.dll</HintPath>
+    </Reference>
+    <Reference Include="SQLite-net, Version=1.5.231.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\Goddard.Xamarin\packages\sqlite-net-pcl.1.5.231\lib\portable-net45+netcore45+wpa81+wp8+MonoAndroid10+MonoTouch10+Xamarin.iOS10\SQLite-net.dll</HintPath>
+    </Reference>
+    <Reference Include="SQLitePCLRaw.batteries_green, Version=1.1.14.520, Culture=neutral, PublicKeyToken=a84b7dcfb1391f7f, processorArchitecture=MSIL">
+      <HintPath>..\..\Goddard.Xamarin\packages\SQLitePCLRaw.bundle_green.1.1.14\lib\portable-net45+netcore45+wpa81+wp8+MonoAndroid10+MonoTouch10+Xamarin.iOS10\SQLitePCLRaw.batteries_green.dll</HintPath>
+    </Reference>
+    <Reference Include="SQLitePCLRaw.batteries_v2, Version=1.1.14.520, Culture=neutral, PublicKeyToken=8226ea5df37bcae9, processorArchitecture=MSIL">
+      <HintPath>..\..\Goddard.Xamarin\packages\SQLitePCLRaw.bundle_green.1.1.14\lib\portable-net45+netcore45+wpa81+wp8+MonoAndroid10+MonoTouch10+Xamarin.iOS10\SQLitePCLRaw.batteries_v2.dll</HintPath>
+    </Reference>
+    <Reference Include="SQLitePCLRaw.core, Version=1.1.14.520, Culture=neutral, PublicKeyToken=1488e028ca7ab535, processorArchitecture=MSIL">
+      <HintPath>..\..\Goddard.Xamarin\packages\SQLitePCLRaw.core.1.1.14\lib\portable-net45+netcore45+wpa81+wp8+MonoAndroid10+MonoTouch10+Xamarin.iOS10\SQLitePCLRaw.core.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http, Version=1.5.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\Goddard.Xamarin\packages\Microsoft.Net.Http.2.2.29\lib\portable-net40+sl4+win8+wp71+wpa81\System.Net.Http.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Net.Http.Extensions, Version=1.5.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\Goddard.Xamarin\packages\Microsoft.Net.Http.2.2.29\lib\portable-net40+sl4+win8+wp71+wpa81\System.Net.Http.Extensions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Net.Http.Primitives, Version=1.5.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\Goddard.Xamarin\packages\Microsoft.Net.Http.2.2.29\lib\portable-net40+sl4+win8+wp71+wpa81\System.Net.Http.Primitives.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Validation, Version=2.4.0.0, Culture=neutral, PublicKeyToken=2fc06f0d701809a7, processorArchitecture=MSIL">
+      <HintPath>..\..\Goddard.Xamarin\packages\Validation.2.4.15\lib\portable-net45+win8+wp8+wpa81\Validation.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Xamarin.Forms.Core, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\Goddard.Xamarin\packages\Xamarin.Forms.4.5.0.617\lib\netstandard1.0\Xamarin.Forms.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Xamarin.Forms.Platform, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\Goddard.Xamarin\packages\Xamarin.Forms.4.5.0.617\lib\netstandard1.0\Xamarin.Forms.Platform.dll</HintPath>
+    </Reference>
+    <Reference Include="Xamarin.Forms.Xaml, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\Goddard.Xamarin\packages\Xamarin.Forms.4.5.0.617\lib\netstandard1.0\Xamarin.Forms.Xaml.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="CheckInPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Controls\CheckInSelector.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ParentSelectionPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ChildSelectionPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="TimedContentPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="UntimedContentPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="UserMessagePage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="TestPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
+  <Import Project="..\..\Goddard.Xamarin\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <!--<Error Condition="!Exists('..\..\Goddard.Xamarin\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets'))" />-->
+    <Error Condition="!Exists('..\..\Goddard.Xamarin\packages\Xamarin.Forms.4.5.0.617\build\Xamarin.Forms.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\Goddard.Xamarin\packages\Xamarin.Forms.4.5.0.617\build\Xamarin.Forms.props'))" />
+    <Error Condition="!Exists('..\..\Goddard.Xamarin\packages\Xamarin.Forms.4.5.0.617\build\Xamarin.Forms.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\Goddard.Xamarin\packages\Xamarin.Forms.4.5.0.617\build\Xamarin.Forms.targets'))" />
+  </Target>
+  <Import Project="..\..\Goddard.Xamarin\packages\Xamarin.Forms.4.5.0.617\build\Xamarin.Forms.targets" Condition="Exists('..\..\Goddard.Xamarin\packages\Xamarin.Forms.4.5.0.617\build\Xamarin.Forms.targets')" />
+</Project>

@@ -9,15 +9,15 @@ namespace TimeClock.Models
         public Child() : base() { }
 
         [Indexed]
-        public long PID { get; init; }
+        public long PID { get; set; }
 
         [Indexed]
-        public string FN { get; init; }
+        public string FN { get; set; }
 
         [Indexed]
-        public string LN { get; init; }
+        public string LN { get; set; }
 
-        public string Sex { get; init; }
+        public string Sex { get; set; }
 
         [Ignore]
         [IgnoreDataMember]
@@ -25,11 +25,11 @@ namespace TimeClock.Models
 
         //note cannot be unique index due to children existing on multiple parent IDs
         [Indexed]
-        public long PersonID { get; init; }
+        public long PersonID { get; set; }
 
         [Indexed]
-        public long FamilyID { get; init; }
+        public long FamilyID { get; set; }
 
-        public string Classroom { get; init; }
+        public string Classroom { get; set; }
     }
 }

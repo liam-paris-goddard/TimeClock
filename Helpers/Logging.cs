@@ -88,7 +88,7 @@ namespace TimeClock.Helpers
             }
             catch (Exception logException)
             {
-                DebugWrite(logException, "Exception during Goddard.Clock.Helpers.Logging.Log(string)");
+                DebugWrite(logException, "Exception during TimeClock.Helpers.Logging.Log(string)");
             }
         }
 

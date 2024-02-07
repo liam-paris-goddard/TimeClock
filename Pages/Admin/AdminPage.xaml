@@ -1,0 +1,175 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<app:TimedContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:app="clr-namespace:TimeClock"
+    xmlns:helpers="clr-namespace:TimeClock.Helpers;assembly=TimeClock"
+    xmlns:controls="clr-namespace:TimeClock.Controls;assembly=TimeClock"
+    x:Class="TimeClock.AdminPage"
+    BindingContext="{helpers:Inject Type={x:Type app:AdminPageViewModel}}">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style
+                TargetType="Label">
+                <Setter
+                    Property="FontSize">
+                    <OnPlatform
+                        x:TypeArguments="x:Double"
+                        iOS="20"
+                        Android="20"
+                        WinPhone="26" />
+                </Setter>
+            </Style>
+            <Style
+                TargetType="controls:GoddardButton">
+                <Setter
+                    Property="FontSize">
+                    <OnPlatform
+                        x:TypeArguments="x:Double"
+                        iOS="20"
+                        Android="20"
+                        WinPhone="24" />
+                </Setter>
+                <Setter
+                    Property="WidthRequest">
+                    <OnPlatform
+                        x:TypeArguments="x:Double"
+                        iOS="180"
+                        Android="180"
+                        WinPhone="210" />
+                </Setter>
+                <Setter
+                    Property="Margin">
+                    <OnPlatform
+                        x:TypeArguments="Thickness"
+                        iOS="20, 20, 20, 0"
+                        Android="20, 20, 20, 0"
+                        WinPhone="30, 20, 30, 0" />
+                </Setter>
+                <Setter
+                    Property="HorizontalOptions"
+                    Value="Center" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <StackLayout
+        Spacing="20"
+        Margin="0, 0, 0, 0">
+
+        <controls:PageHeader
+            Margin="0, 0, 0, 40" />
+
+        <StackLayout
+            Orientation="Horizontal"
+            HorizontalOptions="CenterAndExpand">
+            <StackLayout.HeightRequest>
+                <OnPlatform
+                    x:TypeArguments="x:Double"
+                    iOS="90"
+                    Android="100"
+                    WinPhone="100" />
+            </StackLayout.HeightRequest>
+
+            <controls:GoddardButton
+                Text="Logout"
+                Command="{Binding LogoutCommand}" />
+
+            <controls:GoddardButton
+                Text="Rebuild"
+                Command="{Binding RebuildCommand}" />
+
+            <controls:GoddardButton
+                Text="Force Sync"
+                x:Name="forceSync"
+                Clicked="forceSync_Clicked" />
+
+            <controls:GoddardButton
+                Text="Change School"
+                Command="{Binding ChangeSchoolCommand}"
+                IsVisible="{Binding IsMultiSchoolUser}"
+                x:Name="changeSchool" />
+
+        </StackLayout>
+
+        <StackLayout
+            Orientation="Horizontal"
+            HorizontalOptions="CenterAndExpand">
+
+            <Label
+                HorizontalTextAlignment="Start"
+                TextColor="Black"
+                FontAttributes="Bold"
+                Text="Last Pull:">
+            </Label>
+
+            <Label
+                HorizontalTextAlignment="Start"
+                TextColor="Black"
+                FontAttributes="Bold"
+                Text="{Binding LatestPullDateTime, StringFormat='{0:MM-dd-yyyy h:mm tt}'}">
+            </Label>
+
+            <Label
+                HorizontalTextAlignment="Start"
+                TextColor="Black"
+                FontAttributes="Bold"
+                Text="Last Send:">
+            </Label>
+
+            <Label
+                HorizontalTextAlignment="Start"
+                TextColor="Black"
+                FontAttributes="Bold"
+                Text="{Binding LatestSendDateTime, StringFormat='{0:MM-dd-yyyy h:mm tt}'}">
+            </Label>
+
+            <Label
+                HorizontalTextAlignment="Start"
+                TextColor="Black"
+                FontAttributes="Bold"
+                Text="App Version:">
+            </Label>
+
+            <Label
+                HorizontalTextAlignment="Start"
+                TextColor="Black"
+                FontAttributes="Bold"
+                Text="{Binding Source={x:Static app:ConstantsStatics.DeployVersion}}">
+            </Label>
+
+        </StackLayout>
+
+        <ListView
+            x:Name="listviewEvents"
+            Margin="20, 0, 20, 0">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <StackLayout
+                            Orientation="Horizontal"
+                            HorizontalOptions="Fill">
+                            <Label
+                                Text="{Binding Occurred, StringFormat='{0:MM-dd-yyyy h:mm tt}'}"
+                                FontSize="24"
+                                TextColor="Black" />
+                            <Label
+                                Text="{Binding UserPersonName}"
+                                FontSize="24"
+                                TextColor="Black" />
+                            <Label
+                                Text="{Binding ExplanationText}"
+                                FontSize="24"
+                                TextColor="Black" />
+                            <Label
+                                Text="{Binding TargetPersonName}"
+                                FontSize="24"
+                                TextColor="Black" />
+                        </StackLayout>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </StackLayout>
+</app:TimedContentPage>

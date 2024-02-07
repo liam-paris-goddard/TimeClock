@@ -17,7 +17,7 @@ namespace TimeClock.Helpers
 }
 
 /**
-TODO
+ TODO - consider 
 add to startup.cs 
 public void ConfigureServices(IServiceCollection services)
 {

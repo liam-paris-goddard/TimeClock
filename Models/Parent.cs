@@ -14,9 +14,9 @@ namespace TimeClock.Models
             : base()
         { }
         [Indexed]
-        public string FN { get; init; }
+        public string FN { get; set; }
         [Indexed]
-        public string LN { get; init; }
+        public string LN { get; set; }
         [Indexed]
         public string PIN { get; set; }
 
@@ -32,7 +32,7 @@ namespace TimeClock.Models
 
         [Indexed(Unique = true)]
         [Unique]
-        public long PersonID { get; init; }
+        public long PersonID { get; set; }
         [Indexed]
         public long FamilyID { get; set; }
 

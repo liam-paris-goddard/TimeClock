@@ -7,7 +7,7 @@ namespace TimeClock.Helpers
     {
         private string _message = "";
         private bool _pauseAndRestartPageTimeouts = false;
-        private UserMessagePage _userMessagePage = null;
+        private UserMessagePage _userMessagePage = null; /*** TODO - need to create usermessagepage ***/
         private int? _secondsToShow = null;
         private bool _resetNavigationAndGoToMainOnClose = false;
         private bool _showActivityIndicator = false;
@@ -40,7 +40,7 @@ namespace TimeClock.Helpers
                     }
                     catch (Exception ex)
                     {
-                        Goddard.Clock.Helpers.Logging.Log(ex, "UserMessages.cs StartTimer to Close Exception");
+                        TimeClock.Helpers.Logging.Log(ex, "UserMessages.cs StartTimer to Close Exception");
                         return false;
                     }
                     return false;
@@ -68,10 +68,6 @@ namespace TimeClock.Helpers
 
 /**
 
-TODO 
-
-The main change here is replacing Xamarin.Forms with Microsoft.Maui.Controls.
-
-Please note that the UserMessagePage and GlobalResources classes, and the Goddard.Clock.Helpers.Logging.Log method, are not defined in the provided code. If these are part of your Xamarin.Forms application, they will also need to be updated for .NET MAUI.
+ TODO - consider
 
 Also, the Application.Current.MainPage.Navigation.PushModalAsync and PopModalAsync methods are used for modal page navigation in .NET MAUI, just like in Xamarin.Forms. However, .NET MAUI introduces a new handler-based architecture for navigation which you might want to consider using. */
