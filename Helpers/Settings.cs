@@ -29,7 +29,6 @@ namespace TimeClock.Helpers
 
         private const string BypassSignatureParentsKey = "bypasssignatureparents_key";
         private static readonly bool BypassSignatureParentsDefault = false;
-
         private const string IsMultiSchoolUserKey = "is_multi_school_user_key";
         private static readonly bool IsMultiSchoolUserDefault = false;
 
@@ -42,110 +41,56 @@ namespace TimeClock.Helpers
 
         public static string Username
         {
-            get
-            {
-                return SecureStorage.GetAsync(UsernameKey).Result;
-            }
-            set
-            {
-                _ = SecureStorage.SetAsync(UsernameKey, value);
-            }
+            get => SecureStorage.GetAsync(UsernameKey).Result!;
+            set => _ = SecureStorage.SetAsync(UsernameKey, value);
         }
 
         public static string Password
         {
-            get
-            {
-                return SecureStorage.GetAsync(PasswordKey).Result;
-            }
-            set
-            {
-                _ = SecureStorage.SetAsync(PasswordKey, value);
-            }
+            get => SecureStorage.GetAsync(PasswordKey).Result!;
+            set => _ = SecureStorage.SetAsync(PasswordKey, value);
         }
 
         public static long LastSelectedSchoolID
         {
-            get
-            {
-                return Preferences.Get(LastSelectedSchoolIDKey, LastSelectedSchoolIDDefault);
-            }
-            set
-            {
-                Preferences.Set(LastSelectedSchoolIDKey, value);
-            }
+            get => Preferences.Get(LastSelectedSchoolIDKey, LastSelectedSchoolIDDefault);
+            set => Preferences.Set(LastSelectedSchoolIDKey, value);
         }
 
         public static string LastSelectedSchoolName
         {
-            get
-            {
-                return Preferences.Get(LastSelectedSchoolNameKey, LastSelectedSchoolNameDefault);
-            }
-            set
-            {
-                Preferences.Set(LastSelectedSchoolNameKey, value);
-            }
+            get => Preferences.Get(LastSelectedSchoolNameKey, LastSelectedSchoolNameDefault);
+            set => Preferences.Set(LastSelectedSchoolNameKey, value);
         }
 
         public static string DeviceID
         {
-            get
-            {
-                return Preferences.Get(DeviceIDKey, DeviceIDDefault);
-            }
-            set
-            {
-                Preferences.Set(DeviceIDKey, value);
-            }
+            get => Preferences.Get(DeviceIDKey, DeviceIDDefault);
+            set => Preferences.Set(DeviceIDKey, value);
         }
 
         public static string DeviceDescription
         {
-            get
-            {
-                return Preferences.Get(DeviceDescriptionKey, DeviceDescriptionDefault);
-            }
-            set
-            {
-                Preferences.Set(DeviceDescriptionKey, value);
-            }
+            get => Preferences.Get(DeviceDescriptionKey, DeviceDescriptionDefault);
+            set => Preferences.Set(DeviceDescriptionKey, value);
         }
 
         public static bool BypassSignatureEmployees
         {
-            get
-            {
-                return Preferences.Get(BypassSignatureEmployeesKey, BypassSignatureEmployeesDefault);
-            }
-            set
-            {
-                Preferences.Set(BypassSignatureEmployeesKey, value);
-            }
+            get => Preferences.Get(BypassSignatureEmployeesKey, BypassSignatureEmployeesDefault);
+            set => Preferences.Set(BypassSignatureEmployeesKey, value);
         }
 
         public static bool BypassSignatureParents
         {
-            get
-            {
-                return Preferences.Get(BypassSignatureParentsKey, BypassSignatureParentsDefault);
-            }
-            set
-            {
-                Preferences.Set(BypassSignatureParentsKey, value);
-            }
+            get => Preferences.Get(BypassSignatureParentsKey, BypassSignatureParentsDefault);
+            set => Preferences.Set(BypassSignatureParentsKey, value);
         }
 
         public static bool IsMultiSchoolUser
         {
-            get
-            {
-                return Preferences.Get(IsMultiSchoolUserKey, IsMultiSchoolUserDefault);
-            }
-            set
-            {
-                Preferences.Set(IsMultiSchoolUserKey, value);
-            }
+            get => Preferences.Get(IsMultiSchoolUserKey, IsMultiSchoolUserDefault);
+            set => Preferences.Set(IsMultiSchoolUserKey, value);
         }
     }
 }
