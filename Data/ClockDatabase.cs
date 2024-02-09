@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using SQLite;
 using TimeClock.Models;
+using System.Diagnostics;
 using TimeClock.Helpers;
 using TimeClock.Data;
 
@@ -11,23 +14,27 @@ namespace TimeClock.Data
     public class ClockDatabase
     {
         private readonly SQLiteAsyncConnection database;
+
+        //distinct from similarily named semaphore in the sync engine, this makes it so that only
+        //one method is ever operating on the database at one moment
         private static AsyncLock _databaseLock = new AsyncLock();
 
         public ClockDatabase(string dbPath)
         {
             using (_databaseLock.Lock())
             {
-                database = new(dbPath, SQLiteOpenFlags.ReadWrite | SQLiteOpenFlags.Create | SQLiteOpenFlags.FullMutex);
-                CreateAllTables();
+                database = new SQLiteAsyncConnection(dbPath, SQLiteOpenFlags.ReadWrite | SQLiteOpenFlags.Create | SQLiteOpenFlags.FullMutex);
+                _CreateAllTables();
             }
         }
 
-        private void CreateAllTables()
+        private void _CreateAllTables()
         {
             database.CreateTablesAsync<Event, Parent, Child, Employee, UpdatePIN>().Wait();
             database.CreateTablesAsync<LocalSyncLog, LocalLog>().Wait();
         }
-        private void DropAllTables()
+
+        private void _DropAllTables()
         {
             database.DropTableAsync<Event>().Wait();
             database.DropTableAsync<Parent>().Wait();
@@ -42,8 +49,8 @@ namespace TimeClock.Data
         {
             using (_databaseLock.Lock())
             {
-                DropAllTables();
-                CreateAllTables();
+                _DropAllTables();
+                _CreateAllTables();
             }
         }
 
@@ -62,9 +69,10 @@ namespace TimeClock.Data
             }
         }
 
+
         public async Task<bool> SyncRemoteData(PullSyncData data)
         {
-            if (data is not { Employees: not null, Parents: not null, Children: not null })
+            if (data == null || data.Employees == null || data.Parents == null || data.Children == null)
                 return false;
 
             using (await _databaseLock.LockAsync())
@@ -75,17 +83,17 @@ namespace TimeClock.Data
                     {
                         var deleted = transaction.Execute("DELETE from Employee");
                         var inserted = transaction.InsertAll(data.Employees);
-                        if (inserted != data.Employees.Length)
+                        if (inserted != data.Employees.Count())
                             throw new Exception("Employee rows inserted does not match input data");
 
                         deleted = transaction.Execute("DELETE from Parent");
                         inserted = transaction.InsertAll(data.Parents);
-                        if (inserted != data.Parents.Length)
+                        if (inserted != data.Parents.Count())
                             throw new Exception("Parent rows inserted does not match input data");
 
                         deleted = transaction.Execute("DELETE from Child");
                         inserted = transaction.InsertAll(data.Children);
-                        if (inserted != data.Children.Length)
+                        if (inserted != data.Children.Count())
                             throw new Exception("Child rows inserted does not match input data");
 
                         transaction.Commit();
@@ -94,7 +102,7 @@ namespace TimeClock.Data
                 }
                 catch (Exception ex)
                 {
-                    await Logging.Log(ex);
+                    Logging.Log(ex);
                     return false;
                 }
             }
@@ -115,7 +123,6 @@ namespace TimeClock.Data
                 return await database.QueryAsync<Event>("select * from Event where Uploaded is NULL order by Inserted LIMIT ?", rows);
             }
         }
-
         public async Task<List<LocalLog>> GetUnprocessedLogs(int rows)
         {
             using (await _databaseLock.LockAsync())
@@ -136,7 +143,7 @@ namespace TimeClock.Data
                 var results = new List<EventExtended>();
                 foreach (var ev in events)
                 {
-                    results.Add(new()
+                    results.Add(new EventExtended()
                     {
                         ID = ev.ID,
                         UserType = ev.UserType,
@@ -151,13 +158,15 @@ namespace TimeClock.Data
                 return results;
             }
         }
+
         private string _GetName(long id, IList<IPerson> myList)
         {
             if (myList.Any(@p => @p.PersonID == id))
-                return $"{myList.First(@p => @p.PersonID == id).LN}, {myList.First(@p => @p.PersonID == id).FN}";
+                return myList.First(@p => @p.PersonID == id).LN + ", " + myList.First(@p => @p.PersonID == id).FN;
             else
-                return $"Unknown: {id}";
+                return "Unknown: " + id.ToString();
         }
+
 
         public async Task<int> PurgeUpdatePIN(int olderThanDays)
         {
@@ -191,6 +200,7 @@ namespace TimeClock.Data
             }
         }
 
+
         public async Task<int> CompactDatabase()
         {
             using (await _databaseLock.LockAsync())
@@ -203,27 +213,28 @@ namespace TimeClock.Data
         {
             using (await _databaseLock.LockAsync())
             {
-                return await database.Table<Employee>().OrderBy(@e => @e.LN).ThenBy(@e => @e.FN)
-                    .Skip(currentPage * numberRows).Take(numberRows).ToListAsync();
+                return await database.Table<Employee>().OrderBy(@e => @e.LN).OrderBy(@e => @e.FN)
+                    .Skip(currentPage).Take(numberRows).ToListAsync();
             }
         }
 
-        public async Task<Employee?> AuthenticateEmployee(long employeeID, string pin)
+        public async Task<Employee> AuthenticateEmployee(long employeeID, string pin)
         {
             using (await _databaseLock.LockAsync())
             {
-                return await HandleAuthenticateEmployee(employeeID, pin) ?? null;
+                return await _AuthenticateEmployee(employeeID, pin);
             }
         }
 
-        private async Task<Employee?> HandleAuthenticateEmployee(long employeeID, string pin)
+        private async Task<Employee> _AuthenticateEmployee(long employeeID, string pin)
         {
             var employee = await database.Table<Employee>().Where(@e => @e.PersonID == employeeID).FirstOrDefaultAsync();
-            if (employee is not null and { PIN: var storedPin } and { PIN: not null } && storedPin == pin)
+            if (employee != null && employee.PIN == pin && pin != null)
                 return employee;
             else
                 return null;
         }
+
         public async Task<bool> CanEmployeeCheckChildInOut(long employeeID)
         {
             using (await _databaseLock.LockAsync())
@@ -235,34 +246,42 @@ namespace TimeClock.Data
         private async Task<bool> _CanEmployeeCheckChildInOut(long employeeID)
         {
             var employee = await database.Table<Employee>().Where(@e => @e.PersonID == employeeID).FirstOrDefaultAsync();
-            return employee is not null and { AllowChildClockInOut: true };
+            return employee != null && employee.AllowChildClockInOut;
         }
 
-        public async Task<List<Parent>?> AuthenticateParent(string namestart, string pin)
+        public async Task<List<Parent>> AuthenticateParent(string namestart, string pin)
         {
             using (await _databaseLock.LockAsync())
             {
-                if (string.IsNullOrWhiteSpace(namestart) || namestart.Length < 2)
+                if (String.IsNullOrWhiteSpace(namestart) || namestart.Length < 2)
                     return null;
 
-                return namestart.Length >= 3
-                    ? await database.Table<Parent>().Where(@p => @p.CN == namestart && @p.PIN == pin && pin != null).ToListAsync()
-                    : await database.Table<Parent>().Where(@p => @p.LN.ToUpper() == namestart.ToUpper() && @p.PIN == pin && pin != null).ToListAsync();
+                if (namestart.Length >= 3)
+                {
+                    return await database.Table<Parent>().Where(@p => @p.CN == namestart && @p.PIN == pin && pin != null).ToListAsync();
+                }
+                else
+                {
+                    return await database.Table<Parent>().Where(@p => @p.LN.ToUpper() == namestart.ToUpper() && @p.PIN == pin && pin != null).ToListAsync();
+                }
             }
         }
 
-        public async Task<Parent?> AuthenticateParent(long parentID, string pin)
+        public async Task<Parent> AuthenticateParent(long parentID, string pin)
         {
             using (await _databaseLock.LockAsync())
             {
-                return await HandleAuthenticateParent(parentID, pin);
+                return await _AuthenticateParent(parentID, pin);
             }
         }
 
-        private async Task<Parent?> HandleAuthenticateParent(long parentID, string pin)
+        private async Task<Parent> _AuthenticateParent(long parentID, string pin)
         {
             var parent = await database.Table<Parent>().Where(@p => @p.PersonID == parentID).FirstOrDefaultAsync();
-            return parent is not null and { PIN: var storedPin } and { PIN: not null } && storedPin == pin ? parent : null;
+            if (parent != null && parent.PIN == pin && pin != null)
+                return parent;
+            else
+                return null;
         }
 
         public async Task<List<Child>> GetChildrenForParent(long parentID)
@@ -272,22 +291,23 @@ namespace TimeClock.Data
                 return await database.Table<Child>().Where(@c => @c.PID == parentID).ToListAsync();
             }
         }
+
         public async Task<bool> UpdateEmployeePIN(long employeeID, string oldPIN, string newPIN)
         {
-            if (string.IsNullOrWhiteSpace(oldPIN) || string.IsNullOrWhiteSpace(newPIN))
-                throw new Exception("Both current and new PIN values are required");
+            if (String.IsNullOrWhiteSpace(oldPIN) || String.IsNullOrWhiteSpace(newPIN))
+                throw new Exception("both current and new PIN values are required");
 
             using (await _databaseLock.LockAsync())
             {
-                var employee = await HandleAuthenticateEmployee(employeeID, oldPIN);
-                if (employee is not null)
+                var employee = await _AuthenticateEmployee(employeeID, oldPIN);
+                if (employee != null)
                 {
                     employee.PIN = newPIN;
                     employee.ForceResetPIN = null;
                     employee.Updated = DateTime.Now;
-                    var updatePIN = new UpdatePIN
+                    var updatePIN = new UpdatePIN()
                     {
-                        UserID = employee.PersonID.HasValue ? (long)employee.PersonID.Value : 0,
+                        UserID = employee.PersonID,
                         UserType = UserType.Employee,
                         Action = Models.Action.Change,
                         Old = oldPIN,
@@ -307,13 +327,13 @@ namespace TimeClock.Data
                     }
                     catch (Exception ex)
                     {
-                        await Logging.Log(ex);
+                        Logging.Log(ex);
                         return false;
                     }
                 }
                 else
                 {
-                    return false; // Old pin did not match
+                    return false; //old pin did not match
                 }
             }
         }
@@ -323,13 +343,13 @@ namespace TimeClock.Data
             using (await _databaseLock.LockAsync())
             {
                 var employee = await database.Table<Employee>().Where(@e => @e.PersonID == employeeID).FirstOrDefaultAsync();
-                if (employee is not null)
+                if (employee != null)
                 {
                     employee.LockedPIN = true;
                     employee.Updated = DateTime.Now;
-                    var updatePIN = new UpdatePIN
+                    var updatePIN = new UpdatePIN()
                     {
-                        UserID = (long)employee.PersonID,
+                        UserID = employee.PersonID,
                         UserType = UserType.Employee,
                         Action = Models.Action.Lock,
                         Old = employee.PIN,
@@ -349,13 +369,13 @@ namespace TimeClock.Data
                     }
                     catch (Exception ex)
                     {
-                        await Logging.Log(ex);
+                        Logging.Log(ex);
                         return false;
                     }
                 }
                 else
                 {
-                    return false; // Invalid employee ID, most likely can't ever happen unless programmer has messed up
+                    return false; //invalid employee ID, most likely can't ever happen unless programmer has messed up
                 }
             }
         }
@@ -368,7 +388,7 @@ namespace TimeClock.Data
             }
         }
 
-        // Will return false if PIN is used by anyone other than the parentID passed
+        //will return false if PIN is used by anyone other than the parentID passed
         private async Task<bool> _CheckUniquenessPIN(long parentID, string namestart, string newPIN)
         {
             return await database.Table<Parent>().Where(@p => @p.PersonID != parentID && @p.PIN == newPIN && @p.CN == namestart).CountAsync() == 0;
@@ -376,13 +396,13 @@ namespace TimeClock.Data
 
         public async Task<bool> UpdateParentPIN(long parentID, string namestart, string oldPIN, string newPIN)
         {
-            if (string.IsNullOrWhiteSpace(oldPIN) || string.IsNullOrWhiteSpace(newPIN))
-                throw new Exception("Both current and new PIN values are required");
+            if (String.IsNullOrWhiteSpace(oldPIN) || String.IsNullOrWhiteSpace(newPIN))
+                throw new Exception("both current and new PIN values are required");
 
             using (await _databaseLock.LockAsync())
             {
-                var parent = await HandleAuthenticateParent(parentID, oldPIN);
-                if (parent is not null)
+                var parent = await _AuthenticateParent(parentID, oldPIN);
+                if (parent != null)
                 {
                     if (!(await _CheckUniquenessPIN(parentID, namestart, newPIN)))
                         return false;
@@ -390,9 +410,9 @@ namespace TimeClock.Data
                     parent.PIN = newPIN;
                     parent.ResetPIN = null;
                     parent.Updated = DateTime.Now;
-                    var updatePIN = new UpdatePIN
+                    var updatePIN = new UpdatePIN()
                     {
-                        UserID = (long)parent.PersonID,
+                        UserID = parent.PersonID,
                         UserType = UserType.Parent,
                         Action = Models.Action.Change,
                         Old = oldPIN,
@@ -412,27 +432,29 @@ namespace TimeClock.Data
                     }
                     catch (Exception ex)
                     {
-                        await Logging.Log(ex);
+                        Logging.Log(ex);
                         return false;
                     }
                 }
                 else
                 {
-                    return false; // Old pin did not match
+                    return false; //old pin did not match
                 }
             }
         }
 
         public async Task<bool> EnterClockEvents(IEnumerable<Event> events)
         {
-            if (events is null || !events.Any())
+            //TODO: add check in here for single target with more than 10 clock ins or 10 clock outs in single
+            //day and provide feedback to user
+            if (events == null || events.Count() < 1)
                 return false;
 
             using (await _databaseLock.LockAsync())
             {
                 foreach (var ev in events)
                 {
-                    if (ev.Signature is null or { Length: <= 0 })
+                    if (ev.Signature == null || ev.Signature.Length <= 0)
                     {
                         if (ev.UserType == UserType.Employee && !Helpers.Settings.BypassSignatureEmployees)
                             return false;
@@ -442,27 +464,34 @@ namespace TimeClock.Data
                             return false;
                     }
 
+                    //validating user ID
                     if (ev.UserType == UserType.Employee || ev.UserType == UserType.InLocoParentis)
                     {
                         var employee = await database.Table<Employee>().Where(@e => @e.PersonID == ev.UserPersonID).FirstOrDefaultAsync();
-                        if (employee is null)
+                        if (employee == null)
                             throw new Exception("Employee ID invalid");
                     }
                     else if (ev.UserType == UserType.Parent)
                     {
                         var parent = await database.Table<Parent>().Where(@e => @e.PersonID == ev.UserPersonID).FirstOrDefaultAsync();
-                        if (parent is null)
+                        if (parent == null)
                             throw new Exception("Parent ID invalid");
                     }
                     else
                     {
-                        throw new Exception($"Invalid User Type: {ev.UserType}");
+                        //only would happen if developer adds a new user type and forgets to add appropriate handling
+                        throw new Exception("Invalid User Type: " + ev.UserType.ToString());
                     }
 
-                    if (ev.Occurred < DateTime.Now.AddDays(-1) || ev.Occurred > DateTime.Now)
+                    //sanity check the date
+                    if (ev.Occurred < DateTime.Now.AddDays(-1)) //why would you be saving a date more than 24 hours in the past, remember this is the live/local method
+                        throw new Exception("Invalid Clock In/Out Date/Time");
+
+                    if (ev.Occurred > DateTime.Now) //entering a datetime in the future, oh no sir!
                         throw new Exception("Invalid Clock In/Out Date/Time");
                 }
 
+                //ok all the input looks reasonable, let's proceed
                 try
                 {
                     await database.RunInTransactionAsync((SQLiteConnection transaction) =>
@@ -472,11 +501,11 @@ namespace TimeClock.Data
                             transaction.Insert(ev);
                         }
                     });
-                    return true;
+                    return true; //if no exception, then transaction passed
                 }
                 catch (Exception ex)
                 {
-                    await Logging.Log(ex);
+                    Logging.Log(ex);
                     return false;
                 }
             }
@@ -484,7 +513,7 @@ namespace TimeClock.Data
 
         public async Task<bool> SetLocalEntitiesUploaded(IEnumerable<LocalEntity> items, DateTime uploaded)
         {
-            if (items is null || !items.Any())
+            if (items == null || items.Count() < 1)
                 return true; //effectively making this a non-op
 
             try
@@ -505,7 +534,7 @@ namespace TimeClock.Data
             }
             catch (Exception ex)
             {
-                await Logging.Log(ex);
+                Logging.Log(ex);
                 return false;
             }
         }
@@ -515,7 +544,7 @@ namespace TimeClock.Data
             using (await _databaseLock.LockAsync())
             {
                 var log = new LocalSyncLog() { Type = LogType.Send, Occurred = DateTime.Now };
-                await SaveLocalEntityAsync(log);
+                await SaveLocalEntityAsync<LocalSyncLog>(log);
                 return true;
             }
         }
@@ -525,7 +554,7 @@ namespace TimeClock.Data
             using (await _databaseLock.LockAsync())
             {
                 var log = new LocalSyncLog() { Type = LogType.Pull, Occurred = DateTime.Now };
-                await SaveLocalEntityAsync(log);
+                await SaveLocalEntityAsync<LocalSyncLog>(log);
                 return true;
             }
         }
@@ -542,11 +571,11 @@ namespace TimeClock.Data
             }
         }
 
-        public async Task<List<Child>?> GetChildList(string namestart)
+        public async Task<List<Child>> GetChildList(string namestart)
         {
             using (await _databaseLock.LockAsync())
             {
-                if (string.IsNullOrWhiteSpace(namestart) || namestart.Length != 1)
+                if (String.IsNullOrWhiteSpace(namestart) || namestart.Length != 1)
                     return null;
 
                 var all = await database.Table<Child>().Where(@p => @p.LN.StartsWith(namestart)).ToListAsync();
@@ -579,15 +608,17 @@ namespace TimeClock.Data
             }
         }
 
+
+
         public async Task<bool> UpdateParent(Parent updated)
         {
-            if (updated is null)
-                throw new();
+            if (updated == null)
+                throw new ArgumentNullException();
 
             using (await _databaseLock.LockAsync())
             {
                 var original = await database.Table<Parent>().Where(@p => @p.PersonID == updated.PersonID).FirstOrDefaultAsync();
-                if (original is not null)
+                if (original != null)
                 {
                     try
                     {
@@ -608,7 +639,7 @@ namespace TimeClock.Data
                     }
                     catch (Exception ex)
                     {
-                        await Logging.Log(ex);
+                        Logging.Log(ex);
                         return false;
                     }
                 }
@@ -619,28 +650,30 @@ namespace TimeClock.Data
                         //original not found in local DB, so just do an insert
                         await database.RunInTransactionAsync((SQLiteConnection transaction) =>
                         {
-                            transaction.Insert(updated);
+                            transaction.Insert(original);
                         });
                         return true;
                     }
                     catch (Exception ex)
                     {
-                        await Logging.Log(ex);
+                        Logging.Log(ex);
                         return false;
                     }
                 }
             }
         }
 
+
+
         public async Task<bool> UpdateEmployee(Employee updated)
         {
-            if (updated is null)
-                throw new();
+            if (updated == null)
+                throw new ArgumentNullException();
 
             using (await _databaseLock.LockAsync())
             {
                 var original = await database.Table<Employee>().Where(@p => @p.PersonID == updated.PersonID).FirstOrDefaultAsync();
-                if (original is not null)
+                if (original != null)
                 {
                     try
                     {
@@ -661,7 +694,7 @@ namespace TimeClock.Data
                     }
                     catch (Exception ex)
                     {
-                        await Logging.Log(ex);
+                        Logging.Log(ex);
                         return false;
                     }
                 }
@@ -672,23 +705,26 @@ namespace TimeClock.Data
                         //original not found in local DB, so just do an insert
                         await database.RunInTransactionAsync((SQLiteConnection transaction) =>
                         {
-                            transaction.Insert(updated);
+                            transaction.Insert(original);
                         });
                         return true;
                     }
                     catch (Exception ex)
                     {
-                        await Logging.Log(ex);
+                        Logging.Log(ex);
                         return false;
                     }
                 }
             }
         }
 
+
+
+
         public async Task<bool> LocalLogInsert(LocalLog logEntry)
         {
-            if (logEntry is null)
-                throw new();
+            if (logEntry == null)
+                throw new ArgumentNullException();
 
             using (await _databaseLock.LockAsync())
             {
@@ -703,21 +739,13 @@ namespace TimeClock.Data
                 }
                 catch (Exception ex)
                 {
-                    await Logging.DebugWrite(ex);
+                    Logging.DebugWrite(ex);
                     //TODO: commenting this out as this could lead to infinite recursion, instead we'll have to live with Debug.WriteLine
                     //Logging.Log(ex);
                     return false;
                 }
             }
         }
+
     }
 }
-
-
-/** 
-
-break this file out into smaller classes
-
-also consider changing some of the models into records
-
-*/

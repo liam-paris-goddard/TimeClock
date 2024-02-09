@@ -1,4 +1,6 @@
-﻿using System;
+﻿/** TODO- consider switching to http client. also need to add to service injection */
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,16 +9,17 @@ using System.Diagnostics;
 using Newtonsoft.Json;
 using System.Net.Http;
 using RestSharp;
-using RestSharp.Authenticators;
 using TimeClock.Models;
-using CommunityToolkit.Maui;
+
 namespace TimeClock.Data
 {
     public class RestService
     {
         public string Username { get; private set; }
         public string Password { get; private set; }
+
         public string BaseURL { get; private set; }
+
 
         public RestService()
             : this(Helpers.Settings.Username, Helpers.Settings.Password, ConstantsStatics.TabletWebAPIBaseURL)
@@ -30,70 +33,83 @@ namespace TimeClock.Data
             BaseURL = baseURL;
         }
 
+        //note on exception handling in two methods below - the reality is there is nothing to be done about
+        //exceptions at this level because it's almost certainly some unrecoverable at the moment but transitory
+        //issue like network access/temporary interuption or wrong username/password and so on and logging the 
+        //errors can produce a load of useless noise in the logs
         private async Task<bool> ExecPostMethod(string url, object data)
         {
             try
             {
-                var options = new RestClientOptions(BaseURL)
+                using (var client = new RestClient(BaseURL))
                 {
-                    Authenticator = new HttpBasicAuthenticator(Username, Password)
-                };
-                var client = new RestClient(options);
-                var request = new RestRequest(url, Method.Post);
+                    var encodedCredentials = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{Username}:{Password}"));
+                    client.AddDefaultHeader("Authorization", $"Basic {encodedCredentials}");
+                    var request = new RestRequest(url, Method.Post);
 
-                request.AddOrUpdateHeader("x-fms-schoolID", Helpers.Settings.LastSelectedSchoolID);
-                request.AddOrUpdateHeader("x-fms-deviceID", Helpers.Settings.DeviceID);
-                request.AddOrUpdateHeader("x-fms-deviceDescription", Helpers.Settings.DeviceDescription);
+                    request.AddOrUpdateHeader("x-fms-schoolID", Helpers.Settings.LastSelectedSchoolID);
+                    request.AddOrUpdateHeader("x-fms-deviceID", Helpers.Settings.DeviceID);
+                    request.AddOrUpdateHeader("x-fms-deviceDescription", Helpers.Settings.DeviceDescription);
 
-                request.AddJsonBody(data);
+                    request.AddJsonBody(data);
 
-                var result = await client.ExecuteAsync(request);
-                if (result.IsSuccessful && result.StatusCode == System.Net.HttpStatusCode.OK)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
+                    var result = await client.ExecuteAsync(request);
+                    if (result.IsSuccessful && result.StatusCode == System.Net.HttpStatusCode.OK)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        //set note above
+                        //Debug.WriteLine(@"RESTful GET failed: {0} - {1}", result.StatusCode, result.StatusDescription);
+                        return false;
+                    }
                 }
             }
             catch (Exception ex)
             {
+                //set note above
+                //TimeClock.Helpers.Logging.Log(ex, "RESTful POST exception");
                 return false;
             }
         }
 
-        private async Task<T?> ExecGetMethod<T>(string format, params object[] value)
+        private async Task<T> ExecGetMethod<T>(string format, params object[] value)
         {
             try
             {
-                var options = new RestClientOptions(BaseURL)
+                using (var client = new RestClient(BaseURL))
                 {
-                    Authenticator = new HttpBasicAuthenticator(Username, Password)
-                };
-                var client = new RestClient(options);
-                var methodURL = String.Format(format, value);
-                var request = new RestRequest(methodURL, Method.Get);
+                    var encodedCredentials = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{Username}:{Password}"));
+                    client.AddDefaultHeader("Authorization", $"Basic {encodedCredentials}");
+                    var methodURL = String.Format(format, value);
+                    var request = new RestRequest(methodURL, Method.Get);
 
-                request.AddOrUpdateHeader("x-fms-schoolID", Helpers.Settings.LastSelectedSchoolID);
-                request.AddOrUpdateHeader("x-fms-deviceID", Helpers.Settings.DeviceID);
-                request.AddOrUpdateHeader("x-fms-deviceDescription", Helpers.Settings.DeviceDescription);
+                    request.AddOrUpdateHeader("x-fms-schoolID", Helpers.Settings.LastSelectedSchoolID);
+                    request.AddOrUpdateHeader("x-fms-deviceID", Helpers.Settings.DeviceID);
+                    request.AddOrUpdateHeader("x-fms-deviceDescription", Helpers.Settings.DeviceDescription);
 
-                var result = await client.ExecuteAsync<T>(request);
-                if (result.IsSuccessful && result.StatusCode == System.Net.HttpStatusCode.OK)
-                {
-                    return result.Data;
-                }
-                else
-                {
-                    return default(T);
+                    var result = await client.ExecuteAsync<T>(request);
+                    if (result.IsSuccessful && result.StatusCode == System.Net.HttpStatusCode.OK)
+                    {
+                        return result.Data;
+                    }
+                    else
+                    {
+                        //set note above
+                        //Debug.WriteLine(@"RESTful GET failed: {0} - {1}", result.StatusCode, result.StatusDescription);
+                        return default(T);
+                    }
                 }
             }
             catch (Exception ex)
             {
+                //set note above
+                //TimeClock.Helpers.Logging.Log(ex, "RESTful GET exception");
                 return default(T);
             }
         }
+
         public async Task<SchoolConfiguration> GetSchoolConfiguration(long schoolID)
         {
             return await ExecGetMethod<SchoolConfiguration>("user/schoolconfig/{0}", schoolID);
