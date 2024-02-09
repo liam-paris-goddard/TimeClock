@@ -1,0 +1,138 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:controls="clr-namespace:TimeClock.Controls;assembly=TimeClock"
+    x:Class="TimeClock.Controls.LetterButtons">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style
+                TargetType="controls:GoddardButton">
+                <Setter
+                    Property="FontSize"
+                    Value="32" />
+            </Style>
+            <Style
+                TargetType="Label">
+                <Setter
+                    Property="FontSize"
+                    Value="28" />
+                <Setter
+                    Property="TextColor"
+                    Value="{StaticResource GoddardMedium}" />
+                <Setter
+                    Property="FontAttributes"
+                    Value="Bold" />
+                <Setter
+                    Property="Margin"
+                    Value="6, 0, 0, 0" />
+            </Style>
+            <Style
+                TargetType="controls:BorderlessEntry">
+                <!-- Note that this does not work because we have the Entry disabled.  Text is gray for now. -->
+                <Setter
+                    Property="TextColor"
+                    Value="{StaticResource GoddardMedium}" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ContentView.Content>
+        <Grid
+            VerticalOptions="Center"
+            HorizontalOptions="Center"
+            RowSpacing="4"
+            ColumnSpacing="4"
+            WidthRequest="850"
+            HeightRequest="370">
+            <Label
+                x:Name="titleLabel"
+                Grid.ColumnSpan="9"
+                VerticalOptions="End"/>
+            <Label
+                x:Name="typingModeLabel"
+                Grid.ColumnSpan="2"
+                TextColor="White"
+                IsVisible="False"
+                Margin="5, 0, 0, 20"
+                VerticalOptions="Center" />
+            <ContentView
+                x:Name="typingModeEntryContainer"
+                Grid.Column="2"
+                Grid.ColumnSpan="3"
+                Margin="8, 4, 8, 24"
+                IsVisible="False">
+                <controls:BorderlessEntry
+                    x:Name="typingModeEntry"
+                    Grid.Column="2"
+                    Grid.ColumnSpan="3"
+                    FontAttributes="Bold"
+                    Text=""
+                    IsEnabled="False"
+                    Margin="0, 0, 0, 0"
+                    VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"
+                    HeightRequest="50"
+                    FontSize="28"
+                    WidthRequest="300">
+                </controls:BorderlessEntry>
+            </ContentView>
+
+            <controls:GoddardButton
+                x:Name="typingModeClearButton"
+                Grid.Column="5"
+                Grid.ColumnSpan="2"
+                Text="CLEAR"
+                Margin="0, 0, 0, 20"
+                Clicked="typingModeClearButton_Clicked" />
+
+            <controls:GoddardButton
+                x:Name="typingModeSubmitButton"
+                Grid.Column="7"
+                Grid.ColumnSpan="2"
+                Text="OK"
+                Margin="0, 0, 0, 20"
+                Clicked="typingModeSubmitButton_Clicked" />
+
+            <controls:GoddardButton Grid.Row="1" Grid.Column="0" Text="A" StyleId="A" Clicked="LetterButtonClicked" />
+            <controls:GoddardButton Grid.Row="1" Grid.Column="1" Text="B" StyleId="B" Clicked="LetterButtonClicked" />
+            <controls:GoddardButton Grid.Row="1" Grid.Column="2" Text="C" StyleId="C" Clicked="LetterButtonClicked" />
+            <controls:GoddardButton Grid.Row="1" Grid.Column="3" Text="D" StyleId="D" Clicked="LetterButtonClicked" />
+            <controls:GoddardButton Grid.Row="1" Grid.Column="4" Text="E" StyleId="E" Clicked="LetterButtonClicked" />
+            <controls:GoddardButton Grid.Row="1" Grid.Column="5" Text="F" StyleId="F" Clicked="LetterButtonClicked" />
+            <controls:GoddardButton Grid.Row="1" Grid.Column="6" Text="G" StyleId="G" Clicked="LetterButtonClicked" />
+            <controls:GoddardButton Grid.Row="1" Grid.Column="7" Text="H" StyleId="H" Clicked="LetterButtonClicked" />
+            <controls:GoddardButton Grid.Row="1" Grid.Column="8" Text="I" StyleId="I" Clicked="LetterButtonClicked" />
+
+            <controls:GoddardButton Grid.Row="2" Grid.Column="0" Text="J" StyleId="J" Clicked="LetterButtonClicked" />
+            <controls:GoddardButton Grid.Row="2" Grid.Column="1" Text="K" StyleId="K" Clicked="LetterButtonClicked" />
+            <controls:GoddardButton Grid.Row="2" Grid.Column="2" Text="L" StyleId="L" Clicked="LetterButtonClicked" />
+            <controls:GoddardButton Grid.Row="2" Grid.Column="3" Text="M" StyleId="M" Clicked="LetterButtonClicked" />
+            <controls:GoddardButton Grid.Row="2" Grid.Column="4" Text="N" StyleId="N" Clicked="LetterButtonClicked" />
+            <controls:GoddardButton Grid.Row="2" Grid.Column="5" Text="O" StyleId="O" Clicked="LetterButtonClicked" />
+            <controls:GoddardButton Grid.Row="2" Grid.Column="6" Text="P" StyleId="P" Clicked="LetterButtonClicked" />
+            <controls:GoddardButton Grid.Row="2" Grid.Column="7" Text="Q" StyleId="Q" Clicked="LetterButtonClicked" />
+            <controls:GoddardButton Grid.Row="2" Grid.Column="8" Text="R" StyleId="R" Clicked="LetterButtonClicked" />
+
+            <controls:GoddardButton Grid.Row="3" Grid.Column="0" Text="S" StyleId="S" Clicked="LetterButtonClicked" />
+            <controls:GoddardButton Grid.Row="3" Grid.Column="1" Text="T" StyleId="T" Clicked="LetterButtonClicked" />
+            <controls:GoddardButton Grid.Row="3" Grid.Column="2" Text="U" StyleId="U" Clicked="LetterButtonClicked" />
+            <controls:GoddardButton Grid.Row="3" Grid.Column="3" Text="V" StyleId="V" Clicked="LetterButtonClicked" />
+            <controls:GoddardButton Grid.Row="3" Grid.Column="4" Text="W" StyleId="W" Clicked="LetterButtonClicked" />
+            <controls:GoddardButton Grid.Row="3" Grid.Column="5" Text="X" StyleId="X" Clicked="LetterButtonClicked" />
+            <controls:GoddardButton Grid.Row="3" Grid.Column="6" Text="Y" StyleId="Y" Clicked="LetterButtonClicked" />
+            <controls:GoddardButton Grid.Row="3" Grid.Column="7" Text="Z" StyleId="Z" Clicked="LetterButtonClicked" />
+            
+            <controls:GoddardButton
+                Grid.Row="3"
+                Grid.Column="8"
+                Text=""
+                ImageSource="apple-icon.png"
+                StyleId="TEACHER"
+                UseAltColor="true"
+                Clicked="LetterButtonClicked" />
+
+        </Grid>
+    </ContentView.Content>
+</ContentView>
+

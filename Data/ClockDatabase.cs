@@ -102,7 +102,7 @@ namespace TimeClock.Data
                 }
                 catch (Exception ex)
                 {
-                    Logging.Log(ex);
+                    await Logging.Log(ex);
                     return false;
                 }
             }
@@ -307,7 +307,7 @@ namespace TimeClock.Data
                     employee.Updated = DateTime.Now;
                     var updatePIN = new UpdatePIN()
                     {
-                        UserID = employee.PersonID,
+                        UserID = (long)employee.PersonID,
                         UserType = UserType.Employee,
                         Action = Models.Action.Change,
                         Old = oldPIN,
@@ -327,7 +327,7 @@ namespace TimeClock.Data
                     }
                     catch (Exception ex)
                     {
-                        Logging.Log(ex);
+                        await Logging.Log(ex);
                         return false;
                     }
                 }
@@ -349,7 +349,7 @@ namespace TimeClock.Data
                     employee.Updated = DateTime.Now;
                     var updatePIN = new UpdatePIN()
                     {
-                        UserID = employee.PersonID,
+                        UserID = (long)employee.PersonID,
                         UserType = UserType.Employee,
                         Action = Models.Action.Lock,
                         Old = employee.PIN,
@@ -369,7 +369,7 @@ namespace TimeClock.Data
                     }
                     catch (Exception ex)
                     {
-                        Logging.Log(ex);
+                        await Logging.Log(ex);
                         return false;
                     }
                 }
@@ -412,7 +412,7 @@ namespace TimeClock.Data
                     parent.Updated = DateTime.Now;
                     var updatePIN = new UpdatePIN()
                     {
-                        UserID = parent.PersonID,
+                        UserID = (long)parent.PersonID,
                         UserType = UserType.Parent,
                         Action = Models.Action.Change,
                         Old = oldPIN,
@@ -432,7 +432,7 @@ namespace TimeClock.Data
                     }
                     catch (Exception ex)
                     {
-                        Logging.Log(ex);
+                        await Logging.Log(ex);
                         return false;
                     }
                 }
@@ -505,7 +505,7 @@ namespace TimeClock.Data
                 }
                 catch (Exception ex)
                 {
-                    Logging.Log(ex);
+                    await Logging.Log(ex);
                     return false;
                 }
             }
@@ -534,7 +534,7 @@ namespace TimeClock.Data
             }
             catch (Exception ex)
             {
-                Logging.Log(ex);
+                await Logging.Log(ex);
                 return false;
             }
         }
@@ -639,7 +639,7 @@ namespace TimeClock.Data
                     }
                     catch (Exception ex)
                     {
-                        Logging.Log(ex);
+                        await Logging.Log(ex);
                         return false;
                     }
                 }
@@ -656,7 +656,7 @@ namespace TimeClock.Data
                     }
                     catch (Exception ex)
                     {
-                        Logging.Log(ex);
+                        await Logging.Log(ex);
                         return false;
                     }
                 }
@@ -694,7 +694,7 @@ namespace TimeClock.Data
                     }
                     catch (Exception ex)
                     {
-                        Logging.Log(ex);
+                        await Logging.Log(ex);
                         return false;
                     }
                 }
@@ -711,7 +711,7 @@ namespace TimeClock.Data
                     }
                     catch (Exception ex)
                     {
-                        Logging.Log(ex);
+                        await Logging.Log(ex);
                         return false;
                     }
                 }
@@ -739,9 +739,9 @@ namespace TimeClock.Data
                 }
                 catch (Exception ex)
                 {
-                    Logging.DebugWrite(ex);
+                    await Logging.DebugWrite(ex);
                     //TODO: commenting this out as this could lead to infinite recursion, instead we'll have to live with Debug.WriteLine
-                    //Logging.Log(ex);
+                    //await Logging.Log(ex);
                     return false;
                 }
             }
