@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Goddard.Clock.Helpers
+namespace TimeClock.Helpers
 {
     public class AsyncLock
     {
