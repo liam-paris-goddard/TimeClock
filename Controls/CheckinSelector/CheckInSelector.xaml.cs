@@ -11,7 +11,7 @@ namespace TimeClock.Controls
 {
     public partial class CheckInSelector : ContentView
     {
-        public event EventHandler SelectionMade;
+        public event EventHandler? SelectionMade;
 
         public enum CheckInSelectorImageType
         {
@@ -20,10 +20,10 @@ namespace TimeClock.Controls
             Girl
         }
 
-        private string _firstName;
+        private string? _firstName;
         public string FirstName
         {
-            get { return _firstName; }
+            get => _firstName!;
             set
             {
                 _firstName = value;
@@ -31,10 +31,10 @@ namespace TimeClock.Controls
             }
         }
 
-        private string _lastName;
+        private string? _lastName;
         public string LastName
         {
-            get { return _lastName; }
+            get => _lastName!;
             set
             {
                 _lastName = value;
@@ -45,7 +45,7 @@ namespace TimeClock.Controls
         private long _personId;
         public long PersonId
         {
-            get { return _personId; }
+            get => _personId;
             set
             {
                 _personId = value;
@@ -53,10 +53,10 @@ namespace TimeClock.Controls
             }
         }
 
-        private string _classroom;
+        private string? _classroom;
         public string Classroom
         {
-            get { return _classroom; }
+            get => _classroom!;
             set
             {
                 _classroom = value;
@@ -67,7 +67,7 @@ namespace TimeClock.Controls
         private CheckInSelectorImageType _imageType;
         public CheckInSelectorImageType ImageType
         {
-            get { return _imageType; }
+            get => _imageType;
             set
             {
                 _imageType = value;
@@ -77,7 +77,7 @@ namespace TimeClock.Controls
 
         public bool IsActive
         {
-            get { return PersonId > 0; }
+            get => PersonId > 0;
             private set { }
         }
 
@@ -86,16 +86,11 @@ namespace TimeClock.Controls
 
         public string FullName
         {
-            get { return $"{LastName}, {FirstName}"; }
+            get => $"{LastName}, {FirstName}";
             internal set { }
         }
 
-        public CheckInSelector()
-        {
-            Microsoft.Maui.Controls.Compatibility.Forms.Init();
-        }
-
-        protected override void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        protected override void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             base.OnPropertyChanged(propertyName);
 
@@ -125,7 +120,7 @@ namespace TimeClock.Controls
             }
         }
 
-        private void checkInButton_Clicked(object sender, EventArgs e)
+        private void checkInButton_Clicked(object? sender, EventArgs? e)
         {
             if (SelectedEventType == ClockEventType.In)
             {
@@ -134,14 +129,13 @@ namespace TimeClock.Controls
             else
             {
                 SelectedEventType = ClockEventType.In;
-                if (this.SelectionMade != null)
-                    this.SelectionMade(this, e);
+                this.SelectionMade?.Invoke(this, e);
             }
 
             UpdateButtonColors();
         }
 
-        private void checkOutButton_Clicked(object sender, EventArgs e)
+        private void checkOutButton_Clicked(object? sender, EventArgs? e)
         {
             if (SelectedEventType == ClockEventType.Out)
             {
@@ -150,8 +144,7 @@ namespace TimeClock.Controls
             else
             {
                 SelectedEventType = ClockEventType.Out;
-                if (this.SelectionMade != null)
-                    this.SelectionMade(this, e);
+                this.SelectionMade?.Invoke(this, e);
             }
 
             UpdateButtonColors();

@@ -1,14 +1,62 @@
-﻿<?xml version = "1.0" encoding = "UTF-8" ?>
-<Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:local="clr-namespace:TimeClockTemp"
-             x:Class="TimeClock.App">
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Application
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:app="clr-namespace:Goddard.Clock"
+    xmlns:controls="clr-namespace:Goddard.Clock.Controls;assembly=Goddard.Clock"
+    x:Class="Goddard.Clock.App">
+
     <Application.Resources>
+
         <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
-                <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
-            </ResourceDictionary.MergedDictionaries>
+
+            <!-- note that these are also declared in the windows project's app.xaml file as well as Goddard.Clock.ConstantsStatics.  would be nice to have a single
+                 place but so far nothing worked for all three projects.  -->
+            <Color
+                x:Key="GoddardDark">#00447c</Color>
+            <Color
+                x:Key="GoddardMedium">#4e93cc</Color>
+            <Color
+                x:Key="GoddardMediumLight">#79b7e7</Color>
+            <Color
+                x:Key="GoddardLight">#b6daed</Color>
+            <Color
+                x:Key="GoddardLightest">#ffffff</Color>
+            <Color
+                x:Key="GoddardAltMedium">#ef3e42</Color>
+            <Color
+                x:Key="GoddardAltLight">#f8b1b3</Color>
+
+            <Style
+                x:Key="solidBackgroundPageStyle"
+                TargetType="Page">
+                <Setter
+                    Property="BackgroundColor"
+                    Value="#fff" />
+            </Style>
+
+            <Style
+                TargetType="Button" ApplyToDerivedTypes="True">
+                <Setter
+                    Property="TextColor"
+                    Value="#fff" />
+                <!--<Setter
+                    Property="BackgroundColor"
+                    Value="#ddd" />-->
+            </Style>
+
+            <Style
+                TargetType="Label" ApplyToDerivedTypes="True">
+                <Setter
+                    Property="TextColor"
+                    Value="{StaticResource GoddardDark}" />
+            </Style>
+
+          <Style TargetType="ContentPage" ApplyToDerivedTypes="True">
+            <Setter Property="BackgroundColor" Value="#609fd2" />
+          </Style>
+
         </ResourceDictionary>
+
     </Application.Resources>
 </Application>

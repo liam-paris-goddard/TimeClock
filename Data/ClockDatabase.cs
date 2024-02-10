@@ -232,7 +232,7 @@ namespace TimeClock.Data
             if (employee != null && employee.PIN == pin && pin != null)
                 return employee;
             else
-                return null;
+                return null!;
         }
 
         public async Task<bool> CanEmployeeCheckChildInOut(long employeeID)
@@ -254,7 +254,7 @@ namespace TimeClock.Data
             using (await _databaseLock.LockAsync())
             {
                 if (String.IsNullOrWhiteSpace(namestart) || namestart.Length < 2)
-                    return null;
+                    return null!;
 
                 if (namestart.Length >= 3)
                 {
@@ -281,7 +281,7 @@ namespace TimeClock.Data
             if (parent != null && parent.PIN == pin && pin != null)
                 return parent;
             else
-                return null;
+                return null!;
         }
 
         public async Task<List<Child>> GetChildrenForParent(long parentID)
@@ -307,7 +307,7 @@ namespace TimeClock.Data
                     employee.Updated = DateTime.Now;
                     var updatePIN = new UpdatePIN()
                     {
-                        UserID = (long)employee.PersonID,
+                        UserID = (long)employee.PersonID!,
                         UserType = UserType.Employee,
                         Action = Models.Action.Change,
                         Old = oldPIN,
@@ -349,7 +349,7 @@ namespace TimeClock.Data
                     employee.Updated = DateTime.Now;
                     var updatePIN = new UpdatePIN()
                     {
-                        UserID = (long)employee.PersonID,
+                        UserID = (long)employee.PersonID!,
                         UserType = UserType.Employee,
                         Action = Models.Action.Lock,
                         Old = employee.PIN,
@@ -412,7 +412,7 @@ namespace TimeClock.Data
                     parent.Updated = DateTime.Now;
                     var updatePIN = new UpdatePIN()
                     {
-                        UserID = (long)parent.PersonID,
+                        UserID = (long)parent.PersonID!,
                         UserType = UserType.Parent,
                         Action = Models.Action.Change,
                         Old = oldPIN,
@@ -576,7 +576,7 @@ namespace TimeClock.Data
             using (await _databaseLock.LockAsync())
             {
                 if (String.IsNullOrWhiteSpace(namestart) || namestart.Length != 1)
-                    return null;
+                    return null!;
 
                 var all = await database.Table<Child>().Where(@p => @p.LN.StartsWith(namestart)).ToListAsync();
 

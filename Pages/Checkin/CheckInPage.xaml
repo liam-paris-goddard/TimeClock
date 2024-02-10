@@ -1,0 +1,141 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<app:TimedContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:app="clr-namespace:TimeClock"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:controls="clr-namespace:TimeClock.Controls;assembly=TimeClock"
+    x:Class="TimeClock.CheckInPage">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            
+            <Style
+                TargetType="controls:GoddardButton">
+                <Setter
+                    Property="HorizontalOptions"
+                    Value="Center" />
+                <Setter
+                    Property="VerticalOptions"
+                    Value="Center" />
+                <Setter
+                    Property="FontSize">
+                    <OnPlatform
+                        x:TypeArguments="x:Double"
+                        iOS="16"
+                        Android="16"
+                        WinPhone="20" />
+                </Setter>
+                <Setter
+                    Property="HeightRequest">
+                    <OnPlatform
+                        x:TypeArguments="x:Double"
+                        iOS="38"
+                        Android="38"
+                        WinPhone="56" />
+                </Setter>
+                <Setter
+                    Property="WidthRequest">
+                    <OnPlatform
+                        x:TypeArguments="x:Double"
+                        iOS="120"
+                        Android="120"
+                        WinPhone="160" />
+                </Setter>
+            </Style>
+
+            <Style
+                TargetType="Label">
+                <Setter
+                    Property="FontSize">
+                    <OnPlatform
+                        x:TypeArguments="x:Double"
+                        iOS="18"
+                        Android="18"
+                        WinPhone="22" />
+                </Setter>
+                <Setter
+                    Property="TextColor"
+                    Value="#fff">
+                </Setter>
+                <Setter
+                    Property="FontAttributes"
+                    Value="Bold">
+                </Setter>
+            </Style>
+
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <StackLayout>
+
+        <controls:PageHeader
+            Margin="0, 0, 0, 50" />
+        
+        <controls:GoddardFrame
+            HasShadow="True"
+            HorizontalOptions="Center">
+
+            <StackLayout>
+
+                <Grid
+                    x:Name="eventsGrid"
+                    VerticalOptions="Center"
+                    HorizontalOptions="Center"
+                    RowSpacing="6"
+                    ColumnSpacing="12">
+                    <Grid.WidthRequest>
+                        <OnPlatform
+                            x:TypeArguments="x:Double"
+                            iOS="900"
+                            Android="900"
+                            WinPhone="1000" />
+                    </Grid.WidthRequest>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition
+                            Width="Auto" />
+                        <ColumnDefinition
+                            Width="*" />
+                        <ColumnDefinition
+                            Width="Auto" />
+                        <ColumnDefinition
+                            Width="*" />
+                    </Grid.ColumnDefinitions>
+                </Grid>
+
+                <ContentView
+                    x:Name="instructionsContainer"
+                    Padding="0, 110, 0, 150">
+                    <Label
+                        Text="Tap OK to sign in/out the individual(s) listed above."
+                        HorizontalOptions="Center" />
+                </ContentView>
+
+<mct:DrawingView
+    x:Name="drawingView"
+    HeightRequest="250"
+    HorizontalOptions="Fill"
+    LineColor="#000"
+    BackgroundColor="#fff"
+    Margin="5, 50, 5, 15" />
+
+                <controls:GoddardButton
+                    x:Name="clearSigButton"
+                    Text="CLEAR"
+                    IsVisible="False" />
+
+            </StackLayout>
+        </controls:GoddardFrame>
+
+        <controls:PageFooter
+            x:Name="footer"
+            ShowLeftButton="True"
+            ShowCenterButton="False"
+            ShowRightButton="True"
+            LeftButtonText="BACK"
+            RightButtonText="OK"
+            LeftButtonAutoGoBack="True"
+            RightButtonClickHandler="okFooterButtonClick" />
+
+    </StackLayout>
+</app:TimedContentPage>

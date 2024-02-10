@@ -26,8 +26,8 @@ namespace TimeClock.Controls
 
         public ReturnButtonType ReturnButton
         {
-            get { return (ReturnButtonType)GetValue(ReturnButtonProperty); }
-            set { SetValue(ReturnButtonProperty, value); }
+            get => (ReturnButtonType)GetValue(ReturnButtonProperty);
+            set => SetValue(ReturnButtonProperty, value);
         }
 
         public static readonly BindableProperty NextViewProperty =
@@ -35,8 +35,8 @@ namespace TimeClock.Controls
 
         public View NextView
         {
-            get { return (View)GetValue(NextViewProperty); }
-            set { SetValue(NextViewProperty, value); }
+            get => (View)GetValue(NextViewProperty);
+            set => SetValue(NextViewProperty, value);
         }
 
         public void OnNext()

@@ -9,8 +9,8 @@ namespace TimeClock.Controls
 
         public bool UseAltColor
         {
-            get { return (bool)GetValue(UseAltColorProperty); }
-            set { SetValue(UseAltColorProperty, value); }
+            get => (bool)GetValue(UseAltColorProperty);
+            set => SetValue(UseAltColorProperty, value);
         }
 
         public GoddardButton()
@@ -18,7 +18,7 @@ namespace TimeClock.Controls
             this.Clicked += GoddardButton_Clicked;
         }
 
-        private void GoddardButton_Clicked(object sender, EventArgs e)
+        private void GoddardButton_Clicked(object? sender, EventArgs e)
         {
             GlobalResources.Current.UpdateLastUserInteraction();
         }

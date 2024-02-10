@@ -6,13 +6,21 @@ namespace TimeClock.Controls
 {
     public partial class LetterButtons : ContentView
     {
-        public event EventHandler<LetterButtonClickEventArgs> LetterButtonClickHandler;
-        public event EventHandler<TypingModeSubmitButtonClickEventArgs> TypingModeSubmitButtonClickHandler;
+        public LetterButtons()
+        {
+            InitializeComponent();
+        }
 
-        private string _title;
+        public event EventHandler<LetterButtonClickEventArgs>? LetterButtonClickHandler;
+        public event EventHandler<TypingModeSubmitButtonClickEventArgs>? TypingModeSubmitButtonClickHandler;
+
+
+
+
+        private string? _title;
         public string Title
         {
-            get { return _title; }
+            get => _title!;
             set
             {
                 _title = value;
@@ -23,7 +31,7 @@ namespace TimeClock.Controls
         private bool _isTypingMode;
         public bool IsTypingMode
         {
-            get { return _isTypingMode; }
+            get => _isTypingMode;
             set
             {
                 _isTypingMode = value;
@@ -34,7 +42,7 @@ namespace TimeClock.Controls
         private int _typingModeMaxLength;
         public int TypingModeMaxLength
         {
-            get { return _typingModeMaxLength; }
+            get => _typingModeMaxLength;
             set
             {
                 _typingModeMaxLength = value;
@@ -45,7 +53,7 @@ namespace TimeClock.Controls
         private int _typingModeMinLength;
         public int TypingModeMinLength
         {
-            get { return _typingModeMinLength; }
+            get => _typingModeMinLength;
             set
             {
                 _typingModeMinLength = value;
@@ -53,7 +61,7 @@ namespace TimeClock.Controls
             }
         }
 
-        protected override void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        protected override void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             base.OnPropertyChanged(propertyName);
 
@@ -131,13 +139,13 @@ namespace TimeClock.Controls
 
         public class LetterButtonClickEventArgs : EventArgs
         {
-            public string SelectedLetter { get; set; }
+            public string? SelectedLetter { get; set; }
             public bool IsEmployeeButton { get; set; }
         }
 
         public class TypingModeSubmitButtonClickEventArgs : EventArgs
         {
-            public string EnteredText { get; set; }
+            public string? EnteredText { get; set; }
         }
     }
 }

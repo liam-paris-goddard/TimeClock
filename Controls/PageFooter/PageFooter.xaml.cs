@@ -14,7 +14,7 @@ namespace TimeClock.Controls
         private bool _showLogo = true;
         public bool ShowLogo
         {
-            get { return _showLogo; }
+            get => _showLogo;
             set
             {
                 _showLogo = value;
@@ -25,7 +25,7 @@ namespace TimeClock.Controls
         private bool _showLeftButton = true;
         public bool ShowLeftButton
         {
-            get { return _showLeftButton; }
+            get => _showLeftButton;
             set
             {
                 _showLeftButton = value;
@@ -33,10 +33,10 @@ namespace TimeClock.Controls
             }
         }
 
-        private string _leftButtonText;
+        private string? _leftButtonText;
         public string LeftButtonText
         {
-            get { return _leftButtonText; }
+            get => _leftButtonText;
             set
             {
                 _leftButtonText = value;
@@ -47,7 +47,7 @@ namespace TimeClock.Controls
         private bool _leftButtonAutoGoBack;
         public bool LeftButtonAutoGoBack
         {
-            get { return _leftButtonAutoGoBack; }
+            get => _leftButtonAutoGoBack;
             set
             {
                 _leftButtonAutoGoBack = value;
@@ -58,7 +58,7 @@ namespace TimeClock.Controls
         private bool _leftButtonAutoGoToMain;
         public bool LeftButtonAutoGoToMain
         {
-            get { return _leftButtonAutoGoToMain; }
+            get => _leftButtonAutoGoToMain;
             set
             {
                 _leftButtonAutoGoToMain = value;
@@ -69,7 +69,7 @@ namespace TimeClock.Controls
         private bool _showCenterButton = true;
         public bool ShowCenterButton
         {
-            get { return _showCenterButton; }
+            get => _showCenterButton;
             set
             {
                 _showCenterButton = value;
@@ -77,10 +77,10 @@ namespace TimeClock.Controls
             }
         }
 
-        private string _centerButtonText;
+        private string? _centerButtonText;
         public string CenterButtonText
         {
-            get { return _centerButtonText; }
+            get => _centerButtonText;
             set
             {
                 _centerButtonText = value;
@@ -91,7 +91,7 @@ namespace TimeClock.Controls
         private bool _centerButtonUseAltColor = false;
         public bool CenterButtonUseAltColor
         {
-            get { return _centerButtonUseAltColor; }
+            get => _centerButtonUseAltColor;
             set
             {
                 _centerButtonUseAltColor = value;
@@ -103,7 +103,7 @@ namespace TimeClock.Controls
 
         public bool CenterButtonIsExitEmpMode
         {
-            get { return _centerButtonIsExitEmpMode; }
+            get => _centerButtonIsExitEmpMode;
             set
             {
                 _centerButtonIsExitEmpMode = value;
@@ -114,7 +114,7 @@ namespace TimeClock.Controls
         private bool _showRightButton = true;
         public bool ShowRightButton
         {
-            get { return _showRightButton; }
+            get => _showRightButton;
             set
             {
                 _showRightButton = value;
@@ -122,10 +122,10 @@ namespace TimeClock.Controls
             }
         }
 
-        private string _rightButtonText;
+        private string? _rightButtonText;
         public string RightButtonText
         {
-            get { return _rightButtonText; }
+            get => _rightButtonText;
             set
             {
                 _rightButtonText = value;
@@ -136,7 +136,7 @@ namespace TimeClock.Controls
         private bool _showSchoolLabel;
         public bool ShowSchoolLabel
         {
-            get { return _showSchoolLabel; }
+            get => _showSchoolLabel;
             set
             {
                 _showSchoolLabel = value;
@@ -147,7 +147,7 @@ namespace TimeClock.Controls
         private string _centerText = "";
         public string CenterText
         {
-            get { return _centerText; }
+            get => _centerText;
             set
             {
                 _centerText = value;

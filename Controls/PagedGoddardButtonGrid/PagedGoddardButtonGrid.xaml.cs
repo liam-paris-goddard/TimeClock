@@ -9,8 +9,8 @@ namespace TimeClock.Controls
     [DebuggerDisplay("Text = {Text}, Value = {Value}")]
     public class PagedGoddardButtonGridItem
     {
-        public string Text;
-        public string Value;
+        public string? Text;
+        public string? Value;
     }
 
     public partial class PagedGoddardButtonGrid : View
@@ -34,8 +34,8 @@ namespace TimeClock.Controls
 
         public List<PagedGoddardButtonGridItem> Items
         {
-            get { return (List<PagedGoddardButtonGridItem>)ItemsProperty.GetValue(this); }
-            set { ItemsProperty.SetValue(this, value); }
+            get => (List<PagedGoddardButtonGridItem>)ItemsProperty.GetValue(this);
+            set => ItemsProperty.SetValue(this, value);
         }
 
         private Dictionary<int, List<PagedGoddardButtonGridItem>> _pagedItems = new Dictionary<int, List<PagedGoddardButtonGridItem>>();
@@ -136,8 +136,8 @@ namespace TimeClock.Controls
 
         public class ButtonClickEventArgs : EventArgs
         {
-            public string SelectedValue { get; set; }
-            public string SelectedText { get; set; }
+            public string? SelectedValue { get; set; }
+            public string? SelectedText { get; set; }
         }
     }
 }
