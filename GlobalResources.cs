@@ -1,59 +1,56 @@
-using System;
 using System.ComponentModel;
 
-namespace TimeClock
+namespace Goddard.Clock;
+public class GlobalResources : INotifyPropertyChanged
 {
-    public class GlobalResources : INotifyPropertyChanged
+    // Singleton
+    public static GlobalResources Current { get; } = new();
+
+    //changing this to 25 (from 30) because 30 just "feels too long" when using app
+    public static readonly int PageTimeoutSeconds = 25;
+
+    private bool _goToMainOnPageTimeout;
+    public bool GoToMainOnPageTimeout
     {
-        // Singleton
-        public static GlobalResources Current { get; } = new();
+        get => _goToMainOnPageTimeout;
+        set => SetProperty(ref _goToMainOnPageTimeout, value);
+    }
 
-        //changing this to 25 (from 30) because 30 just "feels too long" when using app
-        public static readonly int PageTimeoutSeconds = 25;
+    private DateTime _lastUserInteraction;
+    public DateTime LastUserInteraction
+    {
+        get => _lastUserInteraction;
+        set => SetProperty(ref _lastUserInteraction, value);
+    }
 
-        private bool _goToMainOnPageTimeout;
-        public bool GoToMainOnPageTimeout
-        {
-            get => _goToMainOnPageTimeout;
-            set => SetProperty(ref _goToMainOnPageTimeout, value);
-        }
+    private DateTime _currentDateTime;
+    public DateTime CurrentDateTime
+    {
+        get => _currentDateTime;
+        set => SetProperty(ref _currentDateTime, value);
+    }
 
-        private DateTime _lastUserInteraction;
-        public DateTime LastUserInteraction
-        {
-            get => _lastUserInteraction;
-            set => SetProperty(ref _lastUserInteraction, value);
-        }
+    public bool HasPageTimedOut => GoToMainOnPageTimeout && LastUserInteraction.AddSeconds(PageTimeoutSeconds) < CurrentDateTime;
 
-        private DateTime _currentDateTime;
-        public DateTime CurrentDateTime
-        {
-            get => _currentDateTime;
-            set => SetProperty(ref _currentDateTime, value);
-        }
+    public void UpdateLastUserInteraction() => LastUserInteraction = DateTime.Now;
 
-        public bool HasPageTimedOut => GoToMainOnPageTimeout && LastUserInteraction.AddSeconds(PageTimeoutSeconds) < CurrentDateTime;
+    public void UpdateCurrentDateTime() => CurrentDateTime = DateTime.Now;
 
-        public void UpdateLastUserInteraction() => LastUserInteraction = DateTime.Now;
+    public event PropertyChangedEventHandler? PropertyChanged;
 
-        public void UpdateCurrentDateTime() => CurrentDateTime = DateTime.Now;
+    protected virtual void OnPropertyChanged(string propertyName)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+    protected virtual bool SetProperty<T>(ref T backingStore, T value, [System.Runtime.CompilerServices.CallerMemberName] string propertyName = "", Action? onChanged = null)
+    {
+        if (EqualityComparer<T>.Default.Equals(backingStore, value))
+            return false;
 
-        protected virtual void OnPropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        protected virtual bool SetProperty<T>(ref T backingStore, T value, [System.Runtime.CompilerServices.CallerMemberName] string propertyName = "", Action onChanged = null)
-        {
-            if (EqualityComparer<T>.Default.Equals(backingStore, value))
-                return false;
-
-            backingStore = value;
-            onChanged?.Invoke();
-            OnPropertyChanged(propertyName);
-            return true;
-        }
+        backingStore = value;
+        onChanged?.Invoke();
+        OnPropertyChanged(propertyName);
+        return true;
     }
 }

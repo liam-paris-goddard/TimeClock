@@ -1,52 +1,53 @@
-﻿using TimeClock.Controls;
-using TimeClock.Helpers;
-using TimeClock.Models;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Goddard.Clock.Controls;
+using Goddard.Clock.Models;
 
-namespace TimeClock
+namespace Goddard.Clock.ViewModels;
+public class StateSelectionPageViewModel : BaseViewModel
 {
-    public class StateSelectionPageViewModel : BaseViewModel
+    private List<AllowedSchool> _schools;
+    public List<AllowedSchool> Schools
     {
-        private List<AllowedSchool> _schools;
-        public List<AllowedSchool> Schools
+        get { return _schools; }
+        set
         {
-            get { return _schools; }
-            set
-            {
-                _schools = value;
-                OnPropertyChanged();
+            _schools = value;
+            OnPropertyChanged();
 
-                if (_schools == null)
-                    return;
+            if (_schools == null)
+                return;
 
-                States = _schools
-                    .Select(s => s.State)
-                    .Distinct()
-                    .Select(s => new PagedGoddardButtonGridItem
-                    {
-                        Text = s,
-                        Value = s,
-                    })
-                    .OrderBy(s => s.Text)
-                    .ToList();
-            }
+            States = _schools
+                .Select(s => s.State)
+                .Distinct()
+                .Select(s => new PagedGoddardButtonGridItem
+                {
+                    Text = s,
+                    Value = s,
+                })
+                .OrderBy(s => s.Text)
+                .ToList();
         }
+    }
 
-        private List<PagedGoddardButtonGridItem> _states;
-        public List<PagedGoddardButtonGridItem> States
+    private List<PagedGoddardButtonGridItem> _states;
+    public List<PagedGoddardButtonGridItem> States
+    {
+        get { return _states; }
+        set
         {
-            get { return _states; }
-            set
-            {
-                _states = value;
-                OnPropertyChanged();
-            }
+            _states = value;
+            OnPropertyChanged();
         }
+    }
 
-        public IList<AllowedSchool> GetSchoolsByState(string state)
-        {
-            return Schools.Where(s => s.State.ToLower() == state.ToLower()).ToList();
-        }
+    public IList<AllowedSchool> GetSchoolsByState(string state)
+    {
+        return Schools.Where(s => string.Equals(s?.State?.ToLower(), state.ToLower())).ToList();
+    }
+
+    public StateSelectionPageViewModel()
+    {
+        _schools = [];
+        _states = [];
     }
 }

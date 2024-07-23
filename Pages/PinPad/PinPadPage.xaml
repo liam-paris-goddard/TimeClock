@@ -1,200 +1,130 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<app:TimedContentPage
-    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:app="clr-namespace:TimeClock"
-    xmlns:controls="clr-namespace:TimeClock.Controls;assembly=TimeClock"
-    x:Class="TimeClock.PinPadPage">
-
+<app:TimedContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                      xmlns:app="clr-namespace:Goddard.Clock"
+                      xmlns:controls="clr-namespace:Goddard.Clock.Controls;assembly=Goddard.Clock"
+                      x:Class="Goddard.Clock.PinPadPage"
+                      xmlns:viewModels="clr-namespace:Goddard.Clock.ViewModels"
+                      xmlns:local="clr-namespace:Goddard.Clock">
     <ContentPage.Resources>
         <ResourceDictionary>
-            <Style
-                TargetType="controls:GoddardButton">
-                <Setter
-                    Property="FontSize">
-                    <OnPlatform
-                        x:TypeArguments="x:Double"
-                        iOS="30"
-                        Android="30"
-                        WinPhone="35" />
-                </Setter>
-                <Setter
-                    Property="HeightRequest">
-                    <OnPlatform
-                        x:TypeArguments="x:Double"
-                        iOS="74"
-                        Android="74"
-                        WinPhone="84" />
-                </Setter>
-                <Setter
-                    Property="WidthRequest">
-                    <OnPlatform
-                        x:TypeArguments="x:Double"
-                        iOS="74"
-                        Android="74"
-                        WinPhone="84" />
-                </Setter>
+            <Style TargetType="controls:GoddardButton">
+                <Setter Property="FontSize"
+                x:DataType="viewModels:PinPadPageViewModel" Value="{Binding PinPadFontSize}" />
+                <Setter Property="HeightRequest"
+                x:DataType="viewModels:PinPadPageViewModel" Value="{Binding PinPadButtonSize}" />
+                <Setter Property="WidthRequest"
+                x:DataType="viewModels:PinPadPageViewModel" Value="{Binding PinPadButtonSize}" />
             </Style>
         </ResourceDictionary>
     </ContentPage.Resources>
-
-    <StackLayout>
-
-        <controls:PageHeader
-            Margin="0, 0, 0, 40" />
-
-        <controls:GoddardFrame
-            Grid.Row="0"
-            Grid.Column="1"
-            HasShadow="True"
-            HorizontalOptions="Center"
-            VerticalOptions="CenterAndExpand">
-
-            <Grid
-                VerticalOptions="Center"
-                HorizontalOptions="Center"
-                RowSpacing="8"
-                ColumnSpacing="8">
-
+    <StackLayout Background="{StaticResource GradientPageBackground}">
+        <controls:PageHeader Margin="0, 0, 0, 40">
+            <controls:PageHeader.BindingContext>
+                <Binding Source="{x:Static local:App.Locator}"
+                         Path="PageHeaderViewModel" />
+            </controls:PageHeader.BindingContext>
+        </controls:PageHeader>
+        <controls:GoddardFrame Grid.Row="0"
+                               Grid.Column="1"
+                               HorizontalOptions="Center"
+                               VerticalOptions="CenterAndExpand">
+            <Grid VerticalOptions="Center"
+                  HorizontalOptions="Center"
+                  RowSpacing="12"
+                  ColumnSpacing="12">
                 <Grid.RowDefinitions>
-                    <RowDefinition
-                        Height="Auto" />
-                    <RowDefinition
-                        Height="Auto" />
-                    <RowDefinition
-                        Height="Auto" />
-                    <RowDefinition
-                        Height="Auto" />
-                    <RowDefinition
-                        Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition
-                        Width="Auto" />
-                    <ColumnDefinition
-                        Width="Auto" />
-                    <ColumnDefinition
-                        Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-
-                <ContentView
-                    Grid.Row="0"
-                    Grid.Column="0"
-                    Grid.ColumnSpan="3"
-                    Padding="8"
-                    Margin="8, 10, 10, 10">
-                    <controls:BorderlessEntry
-                        x:Name="pinDisplay"
-                        IsEnabled="False"
-                        FontSize="28"
-                        IsPassword="True">
-                        <controls:BorderlessEntry.HeightRequest>
-                            <OnPlatform
-                                x:TypeArguments="x:Double"
-                                iOS="50"
-                                WinPhone="50"
-                                Android="50" />
-                        </controls:BorderlessEntry.HeightRequest>
-                    </controls:BorderlessEntry>
+                <ContentView Grid.Row="0"
+                             Grid.Column="0"
+                             Grid.ColumnSpan="3"
+                             Padding="8"
+                             Margin="8, 20, 10, 10">
+                    <controls:BorderlessEntry x:Name="pinDisplay"
+                                              IsEnabled="False"
+                                              FontSize="28"
+                                              IsPassword="True"
+                                              HeightRequest="50"
+                                              BackgroundColor="White" />
                 </ContentView>
-
-                <controls:GoddardButton
-                    Grid.Row="1"
-                    Grid.Column="0"
-                    Text="1"
-                    StyleId="1"
-                    Clicked="DigitButtonClick" />
-                <controls:GoddardButton
-                    Grid.Row="1"
-                    Grid.Column="1"
-                    Text="2"
-                    StyleId="2"
-                    Clicked="DigitButtonClick" />
-                <controls:GoddardButton
-                    Grid.Row="1"
-                    Grid.Column="2"
-                    Text="3"
-                    StyleId="3"
-                    Clicked="DigitButtonClick" />
-
-                <controls:GoddardButton
-                    Grid.Row="2"
-                    Grid.Column="0"
-                    Text="4"
-                    StyleId="4"
-                    Clicked="DigitButtonClick" />
-                <controls:GoddardButton
-                    Grid.Row="2"
-                    Grid.Column="1"
-                    Text="5"
-                    StyleId="5"
-                    Clicked="DigitButtonClick" />
-                <controls:GoddardButton
-                    Grid.Row="2"
-                    Grid.Column="2"
-                    Text="6"
-                    StyleId="6"
-                    Clicked="DigitButtonClick" />
-
-                <controls:GoddardButton
-                    Grid.Row="3"
-                    Grid.Column="0"
-                    Text="7"
-                    StyleId="7"
-                    Clicked="DigitButtonClick" />
-                <controls:GoddardButton
-                    Grid.Row="3"
-                    Grid.Column="1"
-                    Text="8"
-                    StyleId="8"
-                    Clicked="DigitButtonClick" />
-                <controls:GoddardButton
-                    Grid.Row="3"
-                    Grid.Column="2"
-                    Text="9"
-                    StyleId="9"
-                    Clicked="DigitButtonClick" />
-
-                <controls:GoddardButton
-                    Grid.Row="4"
-                    Grid.Column="0"
-                    Text="CLEAR"
-                    StyleId="CLEAR"
-                    Clicked="DigitButtonClick">
-                    <controls:GoddardButton.FontSize>
-                        <OnPlatform
-                            x:TypeArguments="x:Double"
-                            iOS="12"
-                            Android="12"
-                            WinPhone="16" />
-                    </controls:GoddardButton.FontSize>
-                </controls:GoddardButton>
-                <controls:GoddardButton
-                    Grid.Row="4"
-                    Grid.Column="1"
-                    Text="0"
-                    StyleId="0"
-                    Clicked="DigitButtonClick" />
-                <controls:GoddardButton
-                    Grid.Row="4"
-                    Grid.Column="2"
-                    Text="#" />
-
+                <controls:GoddardButton Grid.Row="1"
+                                        Grid.Column="0"
+                                        Text="1"
+                                        StyleId="1"
+                                        Clicked="DigitButtonClick" />
+                <controls:GoddardButton Grid.Row="1"
+                                        Grid.Column="1"
+                                        Text="2"
+                                        StyleId="2"
+                                        Clicked="DigitButtonClick" />
+                <controls:GoddardButton Grid.Row="1"
+                                        Grid.Column="2"
+                                        Text="3"
+                                        StyleId="3"
+                                        Clicked="DigitButtonClick" />
+                <controls:GoddardButton Grid.Row="2"
+                                        Grid.Column="0"
+                                        Text="4"
+                                        StyleId="4"
+                                        Clicked="DigitButtonClick" />
+                <controls:GoddardButton Grid.Row="2"
+                                        Grid.Column="1"
+                                        Text="5"
+                                        StyleId="5"
+                                        Clicked="DigitButtonClick" />
+                <controls:GoddardButton Grid.Row="2"
+                                        Grid.Column="2"
+                                        Text="6"
+                                        StyleId="6"
+                                        Clicked="DigitButtonClick" />
+                <controls:GoddardButton Grid.Row="3"
+                                        Grid.Column="0"
+                                        Text="7"
+                                        StyleId="7"
+                                        Clicked="DigitButtonClick" />
+                <controls:GoddardButton Grid.Row="3"
+                                        Grid.Column="1"
+                                        Text="8"
+                                        StyleId="8"
+                                        Clicked="DigitButtonClick" />
+                <controls:GoddardButton Grid.Row="3"
+                                        Grid.Column="2"
+                                        Text="9"
+                                        StyleId="9"
+                                        Clicked="DigitButtonClick" />
+                <controls:GoddardButton Grid.Row="4"
+                                        Grid.Column="0"
+                                        Text="CLEAR"
+                                        StyleId="CLEAR"
+                                        Clicked="DigitButtonClick"
+                                        FontSize="12" />
+                <controls:GoddardButton Grid.Row="4"
+                                        Grid.Column="1"
+                                        Text="0"
+                                        StyleId="0"
+                                        Clicked="DigitButtonClick" />
+                <controls:GoddardButton Grid.Row="4"
+                                        Grid.Column="2"
+                                        Text="#" />
             </Grid>
-
         </controls:GoddardFrame>
-
-        <controls:PageFooter
-            x:Name="footer"
-            ShowLeftButton="True"
-            LeftButtonText="CANCEL"
-            LeftButtonAutoGoToMain="True"
-            ShowRightButton="True"
-            RightButtonText="OK"
-            RightButtonClickHandler="Footer_RightButtonClickHandler"
-            ShowCenterButton="False"/>
-
+        <controls:PageFooter x:Name="footer"
+                             ShowLeftButton="True"
+                             LeftButtonText="CANCEL"
+                             LeftButtonAutoGoToMain="True"
+                             ShowRightButton="True"
+                             RightButtonText="OK"
+                             RightButtonClickHandler="Footer_RightButtonClickHandler"
+                             ShowCenterButton="False" />
     </StackLayout>
-
 </app:TimedContentPage>

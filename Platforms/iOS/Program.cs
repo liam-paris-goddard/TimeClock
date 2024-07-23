@@ -1,7 +1,6 @@
-﻿using ObjCRuntime;
-using UIKit;
+﻿using UIKit;
 
-namespace TimeClock;
+namespace Goddard.Clock;
 
 public class Program
 {

@@ -1,12 +1,7 @@
-using SQLite;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using SQLite;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace TimeClock.Models
+namespace Goddard.Clock.Models
 {
     public class Parent : LocalEntity, IPerson
     {
@@ -19,7 +14,6 @@ namespace TimeClock.Models
         public string? LN { get; set; }
         [Indexed]
         public string? PIN { get; set; }
-
         public DateTime? ResetPIN { get; set; }
         public bool LockedPIN { get; set; }
 
@@ -32,7 +26,7 @@ namespace TimeClock.Models
 
         [Indexed(Unique = true)]
         [Unique]
-        public long? PersonID { get; set; }
+        public long PersonID { get; set; }
         [Indexed]
         public long FamilyID { get; set; }
 

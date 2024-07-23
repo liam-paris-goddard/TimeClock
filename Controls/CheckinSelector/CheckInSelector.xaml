@@ -1,122 +1,98 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
-<ContentView
-    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:controls="clr-namespace:TimeClock.Controls;assembly=TimeClock"
-    x:Class="TimeClock.Controls.CheckInSelector">
-
-    <ContentPage.Resources>
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<controls:BaseContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                          xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                          xmlns:controls="clr-namespace:Goddard.Clock.Controls;assembly=Goddard.Clock"
+                          x:Class="Goddard.Clock.Controls.CheckInSelector">
+    <ContentView.Resources>
         <ResourceDictionary>
-
-            <Style
-                TargetType="controls:GoddardButton">
-                <Setter
-                    Property="HorizontalOptions"
-                    Value="Center" />
-                <Setter
-                    Property="VerticalOptions"
-                    Value="Center" />
-                <Setter
-                    Property="FontSize"
-                    Value="18" />
-                <Setter
-                    Property="HeightRequest"
-                    Value="42" />
-                <Setter
-                    Property="WidthRequest"
-                    Value="130" />
+            <Style TargetType="controls:GoddardButton">
+                <Setter Property="HorizontalOptions"
+                        Value="Center" />
+                <Setter Property="VerticalOptions"
+                        Value="Center" />
+                <Setter Property="FontSize"
+                        Value="15" />
+                <Setter Property="HeightRequest"
+                        Value="35" />
+                <Setter Property="WidthRequest"
+                        Value="130" />
             </Style>
-
-            <Style
-                TargetType="Label">
-                <Setter
-                    Property="FontSize"
-                    Value="18" />
-                <Setter
-                    Property="TextColor"
-                    Value="#fff">
-                </Setter>
-                <Setter
-                    Property="FontAttributes"
-                    Value="Bold">
-                </Setter>
+            <Style TargetType="Label">
+                <Setter Property="FontSize"
+                        Value="18" />
+                <Setter Property="TextColor"
+                        Value="#fff" />
+                <Setter Property="FontAttributes"
+                        Value="Bold" />
             </Style>
-
         </ResourceDictionary>
-    </ContentPage.Resources>
-
-    <controls:GoddardFrame
-        HasShadow="True"
-        HorizontalOptions="Center">
-
-        <StackLayout>
-
-            <Grid
-                VerticalOptions="Center"
-                HorizontalOptions="Center"
-                RowSpacing="6"
-                ColumnSpacing="10"
-                WidthRequest="350">
-
+    </ContentView.Resources>
+    <controls:GoddardFrame HasShadow="True"
+                           HorizontalOptions="Center"
+                           WidthRequest="330">
+       <StackLayout Orientation="Vertical"> <Grid VerticalOptions="StartAndExpand"
+              HorizontalOptions="StartAndExpand"
+              RowSpacing="6"
+              ColumnSpacing="10"
+              Margin="0,0,0,8">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Image x:Name="personImage"
+                   Grid.RowSpan="2"
+                   HeightRequest="95"
+                   Aspect="AspectFit"
+                   Source="employee.png"
+                   HorizontalOptions="Start"
+                   Margin="0, 0, 10, 0"
+                   Grid.Column="0"
+                   Grid.Row="0" />
+            <Label x:Name="nameLabel"
+                   Grid.Column="1"
+                   Grid.Row="0"
+                   LineBreakMode="WordWrap"
+                   HorizontalOptions="StartAndExpand"
+                   VerticalOptions="EndAndExpand"  />
+            <Label x:Name="classroomLabel"
+                Grid.Row="1"
+                Grid.Column="1"
+                FontAttributes="Italic"
+                LineBreakMode="WordWrap"
+                HorizontalOptions="StartAndExpand"
+                VerticalOptions="EndAndExpand" />
+        </Grid>
+        <Grid
+        VerticalOptions="End"
+              HorizontalOptions="FillAndExpand">
                 <Grid.RowDefinitions>
-                    <RowDefinition
-                        Height="Auto" />
-                    <RowDefinition
-                        Height="Auto" />
+                        <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition
-                        Width="Auto" />
-                    <ColumnDefinition
-                        Width="Auto" />
+                        <ColumnDefinition Width="*" />
+
+                        <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-
-                <Image
-                    x:Name="personImage"
-                    Grid.RowSpan="2"
-                    Source="employee.png"
-                    HorizontalOptions="Start"
-                    Margin="0, 0, 10, 0" />
-
-                <Label
-                    x:Name="nameLabel"
-                    Grid.Column="1" />
-
-                <Label
-                    x:Name="classroomLabel"
-                    Grid.Row="1"
-                    Grid.Column="1"
-                    Text=""
-                    FontAttributes="Italic"
-                    VerticalOptions="EndAndExpand" />
-
-            </Grid>
-
-            <Grid
-                VerticalOptions="Center"
-                HorizontalOptions="Center"
-                RowSpacing="3"
-                ColumnSpacing="3"
-                WidthRequest="350">
-
-                <controls:GoddardButton
-                    x:Name="checkInButton"
-                    Text="CLOCK IN"
-                    Clicked="checkInButton_Clicked"
-                    Margin="0, 5, 0, 3"
-                    HorizontalOptions="Start" />
-
-                <controls:GoddardButton
-                    x:Name="checkOutButton"
-                    Grid.Column="1"
-                    Text="CLOCK OUT"
-                    Clicked="checkOutButton_Clicked"
-                    Margin="0, 5, 0, 3"
-                    HorizontalOptions="End" />
-                
-            </Grid>
-            
-        </StackLayout>
+                <controls:GoddardButton x:Name="checkInButton"
+                Text="CLOCK IN"
+                Clicked="checkInButton_Clicked"
+                Margin="0, 5, 0, 3"
+                HorizontalOptions="Start"
+                Grid.Column="0"
+                Grid.Row="0"
+                PersistAltColor="False" />
+<controls:GoddardButton x:Name="checkOutButton"
+                Text="CLOCK OUT"
+                Clicked="checkOutButton_Clicked"
+                Margin="0, 5, 0, 3"
+                HorizontalOptions="End"
+                Grid.Column="1"
+                Grid.Row="0"
+                PersistAltColor="False" />
+        </Grid></StackLayout>
     </controls:GoddardFrame>
-</ContentView>
+</controls:BaseContentView>

@@ -1,54 +1,67 @@
-﻿using TimeClock.Controls;
-using TimeClock.Data;
-using TimeClock.Helpers;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Threading.Tasks;
-using Microsoft.Maui.Controls;
-using Microsoft.Maui.Controls.Xaml;
+﻿using Goddard.Clock.Controls;
+using Goddard.Clock.Data;
+using Goddard.Clock.Helpers;
+using Goddard.Clock.ViewModels;
+using Microsoft.ApplicationInsights;
 
-namespace TimeClock
+namespace Goddard.Clock;
+[XamlCompilation(XamlCompilationOptions.Compile)]
+public partial class SchoolSelectionPage : TimedContentPage
 {
-    [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class SchoolSelectionPage : TimedContentPage
+    private readonly TelemetryClient _telemetryClient;
+    private readonly ClockDatabase _database;
+    private readonly NavigationService _navigation = App.NavigationService ?? throw new ArgumentNullException(nameof(App.NavigationService));
+    private readonly SyncEngineService _syncEngine = App.SyncEngine ?? throw new ArgumentNullException(nameof(App.SyncEngine));
+    public SchoolSelectionPage(SchoolSelectionPageViewModel viewModel, TelemetryClient telemetryClient)
     {
-        public SchoolSelectionPage()
+        _telemetryClient = telemetryClient;
+        _database = App.Database ?? throw new ArgumentNullException(nameof(App.Database));
+        InitializeComponent();
+        BindingContext = viewModel;
+    }
+
+    protected async void PagedGoddardButtonGridButtonClick(object? sender, PagedGoddardButtonGrid.ButtonClickEventArgs e)
+    {
+        var modalUserMessage = new ModalUserMessage(_navigation, _database, "Synchronizing database...", true, true);
+        modalUserMessage.Show();
+
+        if (long.TryParse(e.SelectedValue, out long selectedSchoolID))
         {
-            InitializeComponent();
+            Settings.LastSelectedSchoolID = selectedSchoolID;
+        }
+        else
+        {
+            // Handle the case when e.SelectedValue is null or cannot be parsed as a long.
+            // You can choose to set a default value or handle the error accordingly.
+            // For example:
+            Settings.LastSelectedSchoolID = 0;
         }
 
-        protected async void PagedGoddardButtonGridButtonClick(object sender, PagedGoddardButtonGrid.ButtonClickEventArgs e)
+        Settings.LastSelectedSchoolName = e.SelectedText ?? "";
+        _telemetryClient.TrackEvent("SchoolSelected", new Dictionary<string, string> { { "SchoolID", Settings.LastSelectedSchoolID.ToString() }, { "SchoolName", Settings.LastSelectedSchoolName }});
+        _telemetryClient.Flush();
+        await _syncEngine.Stop();
+
+        var configTask = new RestService().GetSchoolConfiguration(Settings.LastSelectedSchoolID);
+        var startSyncTask = _syncEngine.Start();
+
+        await Task.WhenAll(new List<Task>() { configTask, startSyncTask });
+
+        var config = await configTask;
+
+        if (configTask.Result != null)
         {
-            var modalUserMessage = new ModalUserMessage("Synchronizing database...", true, true);
-            modalUserMessage.Show();
-
-            Helpers.Settings.LastSelectedSchoolID = Int64.Parse(e.SelectedValue);
-            Helpers.Settings.LastSelectedSchoolName = e.SelectedText;
-
-            await SyncEngine.Instance.Stop();
-
-            var configTask = new RestService().GetSchoolConfiguration(Helpers.Settings.LastSelectedSchoolID);
-            var startSyncTask = SyncEngine.Instance.Start();
-
-            await Task.WhenAll(new List<Task>() { configTask, startSyncTask });
-
-            var config = await configTask;
-
-            if (configTask.Result != null)
-            {
-                Helpers.Settings.BypassSignatureEmployees = configTask.Result.BypassSignatureEmployees;
-                Helpers.Settings.BypassSignatureParents = configTask.Result.BypassSignatureParents;
-            }
-            else
-            {
-                Helpers.Settings.BypassSignatureEmployees = false;
-                Helpers.Settings.BypassSignatureParents = false;
-            }
-
-            modalUserMessage.Close();
-
-            await Helpers.Navigation.ResetNavigationAndGoToRoot();
+            Settings.BypassSignatureEmployees = configTask.Result.BypassSignatureEmployees;
+            Settings.BypassSignatureParents = configTask.Result.BypassSignatureParents;
         }
+        else
+        {
+            Settings.BypassSignatureEmployees = false;
+            Settings.BypassSignatureParents = false;
+        }
+
+        _ = modalUserMessage.Close();
+
+      if (_navigation != null) { await _navigation.ResetNavigationAndGoToRoot(); }
     }
 }

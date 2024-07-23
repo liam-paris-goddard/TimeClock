@@ -1,24 +1,28 @@
-﻿using TimeClock.Controls;
-using System.Linq;
-using Microsoft.Maui.Controls;
+﻿using Goddard.Clock.Controls;
+using Goddard.Clock.Factories;
+using Goddard.Clock.ViewModels;
 
-namespace TimeClock
+namespace Goddard.Clock;
+public partial class StateSelectionPage : TimedContentPage
 {
-    public partial class StateSelectionPage : TimedContentPage
+    private readonly IServiceProvider _serviceProvider;
+    public StateSelectionPage(IServiceProvider serviceProvider, StateSelectionPageViewModel viewModel)
     {
-        public StateSelectionPage()
-        {
-            InitializeComponent();
-        }
+        _serviceProvider = serviceProvider;
+        BindingContext = viewModel;
+        InitializeComponent();
+    }
 
-        protected void PagedGoddardButtonGridButtonClick(object sender, PagedGoddardButtonGrid.ButtonClickEventArgs e)
+    protected void PagedGoddardButtonGridButtonClick(object? sender, PagedGoddardButtonGrid.ButtonClickEventArgs e)
+    {
+        if (e != null && e.SelectedValue != null)
         {
             var schoolsForSelectedState = ((StateSelectionPageViewModel)BindingContext).GetSchoolsByState(e.SelectedValue).ToList();
 
-            var page = new SchoolSelectionPage();
-            ((SchoolSelectionPageViewModel)page.BindingContext).Schools = schoolsForSelectedState;
+            var factory = _serviceProvider.GetRequiredService<ISchoolSelectionPageFactory>();
+            var page = factory.Create(schoolsForSelectedState);
 
-            Navigation.PushAsync(page, false);
+            _ = Navigation.PushAsync(page, false);
         }
     }
 }

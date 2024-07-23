@@ -1,55 +1,18 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
-<View
-    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:controls="clr-namespace:TimeClock.Controls;assembly=TimeClock"
-    x:Class="TimeClock.Controls.PagedGoddardButtonGrid"
-    xmlns:helpers="clr-namespace:TimeClock.Helpers;assembly=TimeClock">
-    
-    <View.Resources>
-        <ResourceDictionary>
-            <Style
-                TargetType="controls:GoddardButton">
-                <Setter
-                    Property="FontSize"
-                    Value="16" />
-                <Setter
-                    Property="HeightRequest"
-                    Value="72" />
-                <Setter
-                    Property="WidthRequest"
-                    Value="174" />
-            </Style>
-        </ResourceDictionary>
-    </View.Resources>
-
-    <controls:GoddardFrame
-        Grid.Column="1"
-        HasShadow="True"
-        HorizontalOptions="Center"
-        WidthRequest="930">
-
-        <Grid
-            x:Name="buttonGrid"
-            HorizontalOptions="Center"
-            RowSpacing="8"
-            ColumnSpacing="14">
-
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition
-                    Width="Auto" />
-                <ColumnDefinition
-                    Width="Auto" />
-                <ColumnDefinition
-                    Width="Auto" />
-                <ColumnDefinition
-                    Width="Auto" />
-                <ColumnDefinition
-                    Width="Auto" />
-            </Grid.ColumnDefinitions>
-
-        </Grid>
-
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<controls:BaseContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                          xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                          xmlns:controls="clr-namespace:Goddard.Clock.Controls;assembly=Goddard.Clock"
+                          x:Class="Goddard.Clock.Controls.PagedGoddardButtonGrid"
+                          xmlns:helpers="clr-namespace:Goddard.Clock.Helpers;assembly=Goddard.Clock">
+    <controls:GoddardFrame Grid.Column="1"
+                           HasShadow="False"
+                           HorizontalOptions="FillAndExpand"
+                           VerticalOptions="FillAndExpand"
+                           Margin="50,5,50,5">
+        <Grid x:Name="buttonGrid"
+              HorizontalOptions="FillAndExpand"
+              VerticalOptions="FillAndExpand"
+              RowSpacing="15"
+              ColumnSpacing="5" />
     </controls:GoddardFrame>
-
-</View>
+</controls:BaseContentView>

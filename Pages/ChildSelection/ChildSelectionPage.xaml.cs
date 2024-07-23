@@ -1,39 +1,48 @@
-﻿using TimeClock.Controls;
-using TimeClock.Models;
-using System;
-using System.Linq;
-using System.Diagnostics;
-using Microsoft.Maui.Controls;
-using Microsoft.Maui.Controls.Xaml;
-using System.Collections.Generic;
-
-namespace TimeClock
+﻿using Goddard.Clock.Controls;
+using Goddard.Clock.Models;
+using Goddard.Clock.Factories;
+using Goddard.Clock.ViewModels;
+namespace Goddard.Clock;
+[XamlCompilation(XamlCompilationOptions.Compile)]
+public partial class ChildSelectionPage : TimedContentPage
 {
-    [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class ChildSelectionPage : TimedContentPage
+    private readonly IServiceProvider _serviceProvider;
+    public ChildSelectionPage(IServiceProvider serviceProvider, ChildSelectionPageViewModel viewModel)
     {
-        public ChildSelectionPage()
+        _serviceProvider = serviceProvider;
+        InitializeComponent();
+        BindingContext = viewModel;
+    }
+
+    protected void PagedGoddardButtonGridButtonClick(object? sender, PagedGoddardButtonGrid.ButtonClickEventArgs e)
+    {
+        long familyId = 0;
+
+        if (!Int64.TryParse(e.SelectedValue, out familyId))
         {
-            InitializeComponent();
+            //TODO: error.  or log.  or something.
         }
 
-        protected void PagedGoddardButtonGridButtonClick(object sender, PagedGoddardButtonGrid.ButtonClickEventArgs e)
+        var viewModel = (ChildSelectionPageViewModel)BindingContext;
+
+        if (!viewModel.EmployeeUserPersonId.HasValue)
         {
-            long familyId = 0;
-
-            if (!Int64.TryParse(e.SelectedValue, out familyId))
-            {
-                //TODO: error.  or log.  or something.
-            }
-
-            var viewModel = (ChildSelectionPageViewModel)BindingContext;
-
-            if (!viewModel.EmployeeUserPersonId.HasValue)
-            {
-                //TODO: error/log
-            }
-
-            Navigation.PushAsync(new PreCheckInPage(UserType.Employee, viewModel.EmployeeUserPersonId.Value, viewModel.EmployeeUserFN, viewModel.EmployeeUserLN, familyId));
+            //TODO: error/log
         }
+        else
+        {
+
+            var factory = _serviceProvider.GetRequiredService<IPreCheckInPageFactory>();
+            
+            var page = factory.Create(UserType.Employee, viewModel.EmployeeUserPersonId.Value, viewModel.EmployeeUserFN, viewModel.EmployeeUserLN, familyId);
+            _ = Navigation.PushAsync(page,
+                false);
+        }
+    }
+
+    private void BackButtonClick(object? sender, EventArgs e) {
+            var factory = _serviceProvider.GetRequiredService<IHomePageFactory>();
+            var page = factory.Create(false);
+            _ = Navigation.PushAsync(page, false);
     }
 }

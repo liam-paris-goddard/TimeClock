@@ -1,25 +1,28 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<app:TimedContentPage
-    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:app="clr-namespace:TimeClock"
-    xmlns:helpers="clr-namespace:TimeClock.Helpers;assembly=TimeClock"
-    xmlns:controls="clr-namespace:TimeClock.Controls;assembly=TimeClock"
-    x:Class="TimeClock.StateSelectionPage"
-    BindingContext="{helpers:Inject Type={x:Type app:StateSelectionPageViewModel}}">
-    <StackLayout>
-        <controls:PageHeader
-            x:Name="header"
-            Margin="0, 0, 0, 50" />
-        <controls:PagedGoddardButtonGrid
-            Items="{Binding States}"
-            ButtonClickHandler="PagedGoddardButtonGridButtonClick" />
-        <controls:PageFooter
-            x:Name="footer"
-            ShowLeftButton="True"
-            LeftButtonText="Back"
-            LeftButtonAutoGoBack="True"
-            ShowCenterButton="False"
-            ShowRightButton="False" />
+<app:TimedContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                      xmlns:app="clr-namespace:Goddard.Clock"
+                      xmlns:helpers="clr-namespace:Goddard.Clock.Helpers;assembly=Goddard.Clock"
+                      xmlns:controls="clr-namespace:Goddard.Clock.Controls;assembly=Goddard.Clock"
+                      x:Class="Goddard.Clock.StateSelectionPage"
+                      xmlns:viewModels="clr-namespace:Goddard.Clock.ViewModels"
+                      xmlns:local="clr-namespace:Goddard.Clock">
+    <StackLayout Background="{StaticResource GradientPageBackground}">
+        <controls:PageHeader x:Name="header"
+                             Margin="0, 0, 0, 40">
+            <controls:PageHeader.BindingContext>
+                <Binding Source="{x:Static local:App.Locator}"
+                         Path="PageHeaderViewModel" />
+            </controls:PageHeader.BindingContext>
+        </controls:PageHeader>
+        <controls:PagedGoddardButtonGrid x:DataType="viewModels:StateSelectionPageViewModel"
+                                         Items="{Binding States}"
+                                         ButtonClickHandler="PagedGoddardButtonGridButtonClick" />
+        <controls:PageFooter x:Name="footer"
+                             ShowLeftButton="True"
+                             LeftButtonText="Back"
+                             LeftButtonAutoGoBack="True"
+                             ShowCenterButton="False"
+                             ShowRightButton="False" />
     </StackLayout>
 </app:TimedContentPage>

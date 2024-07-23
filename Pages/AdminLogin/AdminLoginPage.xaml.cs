@@ -1,27 +1,37 @@
-﻿using Microsoft.Maui.Controls;
-using Microsoft.Maui.Controls.Xaml;
-
-namespace TimeClock
+﻿using Goddard.Clock.ViewModels;
+namespace Goddard.Clock;
+[XamlCompilation(XamlCompilationOptions.Compile)]
+public partial class AdminLoginPage : TimedContentPage
 {
-    [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class AdminLoginPage : TimedContentPage
+    [Obsolete]
+    public AdminLoginPage(AdminLoginPageViewModel viewModel)
     {
-        public AdminLoginPage()
+        InitializeComponent();
+        BindingContext = viewModel;
+        passwordField.Completed += PasswordField_Completed;
+        adminLoginFrame.Margin = DeviceInfo.Idiom == DeviceIdiom.Phone ? new Thickness(0) : new Thickness(100);
+        adminLoginFrame.VerticalOptions = DeviceInfo.Idiom == DeviceIdiom.Phone ? LayoutOptions.FillAndExpand : LayoutOptions.StartAndExpand;
+        if (DeviceInfo.Idiom == DeviceIdiom.Phone)
         {
-            InitializeComponent();
-
-            passwordField.Completed += PasswordField_Completed;
+            verifyButton.Margin = new Thickness(0, 5, 15, 0);
+            cancelButton.Margin = new Thickness(0, 5, 15, 0);
         }
-        private void PasswordField_Completed(object sender, EventArgs e)
+        else
         {
-            verifyButton.Command.Execute(null);
+            verifyButton.Margin = new Thickness(0, 10, 40, 0);
+            cancelButton.Margin = new Thickness(0, 10, 40, 0);
         }
 
-        protected override void OnAppearing()
-        {
-            base.OnAppearing();
+    }
+    private void PasswordField_Completed(object? sender, EventArgs e)
+    {
+        verifyButton.Command.Execute(null);
+    }
 
-            passwordField.Focus();
-        }
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+
+        _ = passwordField.Focus();
     }
 }

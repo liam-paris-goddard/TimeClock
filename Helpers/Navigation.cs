@@ -1,34 +1,39 @@
-﻿using System;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Maui.Controls;
-
-namespace TimeClock.Helpers
+﻿using System.Diagnostics;
+using Goddard.Clock.Factories;
+namespace Goddard.Clock.Helpers;
+public class NavigationService
 {
-    public static class Navigation
+    private readonly IServiceProvider _serviceProvider;
+
+    public bool isFromModal = false;
+
+    public NavigationService(IServiceProvider serviceProvider)
     {
-        public static async Task ResetNavigationAndGoToRoot(Page? rootPage = null)
+        _serviceProvider = serviceProvider;
+    }
+
+    public async Task ResetNavigationAndGoToRoot(Page? root = null)
+    {
+        try
         {
-            try
+            var rootPage = root;
+            if (root == null)
             {
-                rootPage ??= new HomePage();
+                var homePageFactory = _serviceProvider.GetRequiredService<IHomePageFactory>();
+                rootPage = homePageFactory.Create();
+            }
 
-                var navigationPage = (NavigationPage)Application.Current.Application.MainPage;
-                navigationPage.Navigation.InsertPageBefore(rootPage, navigationPage.Navigation.NavigationStack.First());
-
+            if (Application.Current?.MainPage is NavigationPage navigationPage)
+            {
+                navigationPage.Navigation.InsertPageBefore(rootPage, navigationPage.Navigation.NavigationStack[0]);
                 await navigationPage.Navigation.PopToRootAsync(false);
             }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Reset Nav Error: {ex}");
-                // Consider logging the error or showing a user-friendly message
-            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Reset Nav Error: {ex}");
+            // Consider logging the error or showing a user-friendly message
         }
     }
 }
 
-/**
- TODO - consider
-Please note that you'll need to replace HomePage with the actual root page of your .NET MAUI application. Also, ensure that your HomePage is a Page type, not a View type.
-*/

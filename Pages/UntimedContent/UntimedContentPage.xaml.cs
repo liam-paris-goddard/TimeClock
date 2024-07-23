@@ -1,32 +1,58 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace Goddard.Clock;
+using System.ComponentModel;
 
-using Microsoft.Maui.Controls;
-using Microsoft.Maui.Controls.Xaml;
-
-namespace TimeClock
+[XamlCompilation(XamlCompilationOptions.Compile)]
+public partial class UntimedContentPage : ContentPage
 {
-    [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class UntimedContentPage : ContentPage
+    public double DeviceWidth { get; set; }
+    public double DeviceHeight { get; set; }
+    public string DeviceType { get; set; }
+
+    public ConstantsStatics.ScreenSize DeviceDisplayInformation { get; set; }
+    public DisplayOrientation DeviceOrientation { get; set; }
+
+
+    public UntimedContentPage()
     {
-        public UntimedContentPage()
-        {
-            InitializeComponent();
-            NavigationPage.SetHasNavigationBar(this, false);
-        }
+        DeviceType = DeviceInformation.Instance?.DeviceType ?? "small";;
 
-        protected override void OnAppearing()
-        {
-            base.OnAppearing();
-            GlobalResources.Current.GoToMainOnPageTimeout = false;
-        }
+        DeviceHeight = DeviceInformation.Instance?.Height ?? 1668;
+        DeviceWidth = DeviceInformation.Instance?.Width ?? 2388;
+        DeviceDisplayInformation = DeviceInformation.Instance?.DisplayInformation ?? ConstantsStatics.iOSDeviceModels["sm"];
+        DeviceOrientation = DeviceInformation.Instance?.GlobalOrientation ?? DisplayOrientation.Landscape;
+        if(DeviceInformation.Instance != null){
+            DeviceInformation.Instance.PropertyChanged += OnDeviceInformation_PropertyChanged;
+        }        Shell.SetNavBarIsVisible(this, false);
+        InitializeComponent();
+        NavigationPage.SetHasNavigationBar(this, false);
+    }
 
-        protected override bool OnBackButtonPressed()
-        {
-            return true;
-        }
+    private void OnDeviceInformation_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(DeviceInformation.Width))
+            DeviceWidth = DeviceInformation.Instance?.Width ?? 2388;
+        if (e.PropertyName == nameof(DeviceInformation.Height))
+            DeviceHeight = DeviceInformation.Instance?.Height ?? 1668;
+        if (e.PropertyName == nameof(DeviceInformation.DisplayInformation))
+            DeviceDisplayInformation = DeviceInformation.Instance?.DisplayInformation ?? ConstantsStatics.iOSDeviceModels["sm"];
+        if (e.PropertyName == nameof(DeviceInformation.GlobalOrientation))
+            DeviceOrientation = DeviceInformation.Instance?.GlobalOrientation ?? DisplayOrientation.Landscape;
+        OnDeviceInformationChanged(e.PropertyName ?? "");
+    }
+
+    protected virtual void OnDeviceInformationChanged(string propertyName)
+    {
+    }
+
+
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        GlobalResources.Current.GoToMainOnPageTimeout = false;
+    }
+
+    protected override bool OnBackButtonPressed()
+    {
+        return true;
     }
 }

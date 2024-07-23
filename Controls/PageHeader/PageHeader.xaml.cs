@@ -1,7 +1,8 @@
-﻿using System.Runtime.CompilerServices;
-using Microsoft.Maui.Controls;
-
-namespace TimeClock.Controls
+﻿namespace Goddard.Clock.Controls;
+public partial class PageHeader : ContentView
 {
-    public partial class PageHeader : ContentView { }
+    public PageHeader()
+    {
+        InitializeComponent();
+    }
 }

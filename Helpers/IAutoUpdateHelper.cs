@@ -1,18 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TimeClock.Helpers
+﻿namespace Goddard.Clock.Helpers;
+public interface IAutoUpdateHelper
 {
-    public interface IAutoUpdateHelper
-    {
-        bool IsUpdateAvailable();
-        void DownloadInstallUpdate();
+    Task<bool> IsUpdateAvailableAsync();
+    void DownloadInstallUpdate();
 
-        bool IsFirstVersionArgumentLater(string first, string second);
+    bool IsFirstVersionArgumentLater(string first, string second);
 
-        string GetLocalVersionNumber();
-    }
+    string GetLocalVersionNumber();
 }

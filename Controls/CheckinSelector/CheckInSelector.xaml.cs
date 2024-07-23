@@ -1,99 +1,108 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using TimeClock.Models;
-using Microsoft.Maui.Controls;
+﻿using System.Runtime.CompilerServices;
+using Goddard.Clock.Models;
 
-namespace TimeClock.Controls
+namespace Goddard.Clock.Controls;
+public partial class CheckInSelector : BaseContentView
 {
-    public partial class CheckInSelector : ContentView
+    public event EventHandler? SelectionMade;
+
+    public enum CheckInSelectorImageType
     {
-        public event EventHandler? SelectionMade;
+        Employee,
+        Boy,
+        Girl
+    }
 
-        public enum CheckInSelectorImageType
+    private string? _firstName;
+    public string FirstName
+    {
+        get => _firstName!;
+        set
         {
-            Employee,
-            Boy,
-            Girl
+            _firstName = value;
+            OnPropertyChanged();
         }
+    }
 
-        private string? _firstName;
-        public string FirstName
+    private string? _lastName;
+    public string LastName
+    {
+        get => _lastName!;
+        set
         {
-            get => _firstName!;
-            set
-            {
-                _firstName = value;
-                OnPropertyChanged();
-            }
+            _lastName = value;
+            OnPropertyChanged();
         }
+    }
 
-        private string? _lastName;
-        public string LastName
+    private long _personId;
+    public long PersonId
+    {
+        get => _personId;
+        set
         {
-            get => _lastName!;
-            set
-            {
-                _lastName = value;
-                OnPropertyChanged();
-            }
+            _personId = value;
+            OnPropertyChanged();
         }
+    }
 
-        private long _personId;
-        public long PersonId
+    private string? _classroom;
+    public string Classroom
+    {
+        get => _classroom!;
+        set
         {
-            get => _personId;
-            set
-            {
-                _personId = value;
-                OnPropertyChanged();
-            }
+            _classroom = value;
+            OnPropertyChanged();
         }
+    }
 
-        private string? _classroom;
-        public string Classroom
+    private CheckInSelectorImageType _imageType;
+    public CheckInSelectorImageType ImageType
+    {
+        get => _imageType;
+        set
         {
-            get => _classroom!;
-            set
-            {
-                _classroom = value;
-                OnPropertyChanged();
-            }
+            _imageType = value;
+            OnPropertyChanged();
         }
+    }
 
-        private CheckInSelectorImageType _imageType;
-        public CheckInSelectorImageType ImageType
+    public bool IsActive
+    {
+        get => PersonId > 0;
+        private set { }
+    }
+
+
+    private ClockEventType? _selectedEventType;
+    public ClockEventType? SelectedEventType { 
+        get => _selectedEventType; 
+        set 
         {
-            get => _imageType;
-            set
-            {
-                _imageType = value;
-                OnPropertyChanged();
-            }
-        }
+            _selectedEventType = value;
+            OnPropertyChanged();
+        
+        } 
+    }
 
-        public bool IsActive
+    public string FullName
+    {
+        get => $"{LastName}, {FirstName}";
+        internal set { }
+    }
+
+    public CheckInSelector()
+    {
+        InitializeComponent();
+        BindingContext = this;
+    }
+
+    protected override void OnPropertyChanged([CallerMemberName] string propertyName = "")
+    {
+        base.OnPropertyChanged(propertyName);
+        try
         {
-            get => PersonId > 0;
-            private set { }
-        }
-
-
-        public ClockEventType? SelectedEventType { get; private set; }
-
-        public string FullName
-        {
-            get => $"{LastName}, {FirstName}";
-            internal set { }
-        }
-
-        protected override void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-        {
-            base.OnPropertyChanged(propertyName);
-
             switch (propertyName)
             {
                 case nameof(FirstName):
@@ -117,54 +126,62 @@ namespace TimeClock.Controls
                             break;
                     }
                     break;
+                case nameof(SelectedEventType):
+                    UpdateButtonColors();
+                    break;
             }
         }
-
-        private void checkInButton_Clicked(object? sender, EventArgs? e)
+        catch (Exception ex)
         {
-            if (SelectedEventType == ClockEventType.In)
-            {
-                SelectedEventType = null;
-            }
-            else
-            {
-                SelectedEventType = ClockEventType.In;
-                this.SelectionMade?.Invoke(this, e);
-            }
+            Console.WriteLine(ex.Message);
+        }
+    }
 
-            UpdateButtonColors();
+    private void checkInButton_Clicked(object? sender, EventArgs e)
+    {
+        if (SelectedEventType == ClockEventType.In)
+        {
+            SelectedEventType = null;
+        }
+        else
+        {
+            SelectedEventType = ClockEventType.In;
+            if (this.SelectionMade != null)
+                this.SelectionMade(this, e);
         }
 
-        private void checkOutButton_Clicked(object? sender, EventArgs? e)
-        {
-            if (SelectedEventType == ClockEventType.Out)
-            {
-                SelectedEventType = null;
-            }
-            else
-            {
-                SelectedEventType = ClockEventType.Out;
-                this.SelectionMade?.Invoke(this, e);
-            }
+    }
 
-            UpdateButtonColors();
+    private void checkOutButton_Clicked(object? sender, EventArgs e)
+    {
+        if (SelectedEventType == ClockEventType.Out)
+        {
+            SelectedEventType = null;
+        }
+        else
+        {
+            SelectedEventType = ClockEventType.Out;
+            if (this.SelectionMade != null)
+                this.SelectionMade(this, e);
         }
 
-        private void UpdateButtonColors()
-        {
-            checkInButton.UseAltColor = SelectedEventType == ClockEventType.In;
-            checkOutButton.UseAltColor = SelectedEventType == ClockEventType.Out;
-        }
+    }
 
-        public void ChangeSelectedEventType(ClockEventType eventType)
+    private void UpdateButtonColors()
+    {
+        checkInButton.PersistAltColor = SelectedEventType == ClockEventType.In;
+        checkOutButton.PersistAltColor = SelectedEventType == ClockEventType.Out;
+    }
+
+    public void ChangeSelectedEventType(ClockEventType eventType)
+    {
+        var temp = EventArgs.Empty;
+        if (SelectedEventType != eventType)
         {
-            if (SelectedEventType != eventType)
-            {
-                if (eventType == ClockEventType.In)
-                    checkInButton_Clicked(null, null);
-                else if (eventType == ClockEventType.Out)
-                    checkOutButton_Clicked(null, null);
-            }
+            if (eventType == ClockEventType.In)
+                checkInButton_Clicked(null, temp);
+            else if (eventType == ClockEventType.Out)
+                checkOutButton_Clicked(null, temp);
         }
     }
 }

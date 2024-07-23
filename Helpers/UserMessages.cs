@@ -1,53 +1,54 @@
-﻿using System;
-using Microsoft.Maui.Controls;
+﻿using Goddard.Clock.Data;
 
-namespace TimeClock.Helpers
+namespace Goddard.Clock.Helpers;
+public class ModalUserMessage(NavigationService? navigation, ClockDatabase? database, string message, bool pauseAndRestartPageTimeouts = false, bool showActivityIndicator = false, int? secondsToShow = null, bool resetNavigationAndGoToMainOnClose = false)
 {
-    public class ModalUserMessage
+    private readonly string _message = message;
+    private readonly bool _pauseAndRestartPageTimeouts = pauseAndRestartPageTimeouts;
+    private UserMessagePage? _userMessagePage;
+    private readonly int? _secondsToShow = secondsToShow;
+    private readonly bool _resetNavigationAndGoToMainOnClose = resetNavigationAndGoToMainOnClose;
+    private readonly bool _showActivityIndicator = showActivityIndicator;
+    private readonly ClockDatabase _database = database ?? throw new ArgumentNullException(nameof(database));
+    private readonly NavigationService _navigation = navigation ?? throw new ArgumentNullException(nameof(navigation));
+
+
+    public void Show()
     {
-        private string _message = "";
-        private bool _pauseAndRestartPageTimeouts = false;
-        private UserMessagePage _userMessagePage = null;
-        private int? _secondsToShow = null;
-        private bool _resetNavigationAndGoToMainOnClose = false;
-        private bool _showActivityIndicator = false;
+        if (_pauseAndRestartPageTimeouts)
+            GlobalResources.Current.GoToMainOnPageTimeout = false;
 
-        public ModalUserMessage(string message, bool pauseAndRestartPageTimeouts = false, bool showActivityIndicator = false, int? secondsToShow = null, bool resetNavigationAndGoToMainOnClose = false)
+        _userMessagePage = new UserMessagePage(_message, _showActivityIndicator);
+
+        _ = (Application.Current?.MainPage?.Navigation.PushModalAsync(_userMessagePage, false));
+
+        if (_secondsToShow.HasValue)
         {
-            _message = message;
-            _pauseAndRestartPageTimeouts = pauseAndRestartPageTimeouts;
-            _secondsToShow = secondsToShow;
-            _resetNavigationAndGoToMainOnClose = resetNavigationAndGoToMainOnClose;
-            _showActivityIndicator = showActivityIndicator;
-        }
-
-        public async Task Show()
-        {
-            if (_pauseAndRestartPageTimeouts)
-                GlobalResources.Current.GoToMainOnPageTimeout = false;
-
-            _userMessagePage = new UserMessagePage(_message, _showActivityIndicator);
-
-            await Application.Current.MainPage.Navigation.PushModalAsync(_userMessagePage, false);
-
-            if (_secondsToShow.HasValue)
+            _userMessagePage.Dispatcher.StartTimer(TimeSpan.FromSeconds(_secondsToShow.Value), () =>
             {
-                _userMessagePage.Dispatcher.DispatchDelayed(async () =>
+                async void PerformAsyncOperation()
                 {
                     try
                     {
-                        await CloseAsync();
+                        await Close();
                     }
                     catch (Exception ex)
                     {
-                        _ = TimeClock.Helpers.Logging.Log(ex, "UserMessages.cs StartTimer to Close Exception");
-                        throw;
+                        await Logging.Log(_database, ex, "UserMessages.cs StartTimer to Close Exception");
                     }
-                }, TimeSpan.FromSeconds(_secondsToShow.Value));
-            }
-        }
 
-        public void Close()
+                }
+
+                PerformAsyncOperation();
+                return false;
+            });
+        }
+    }
+
+
+    public async Task Close()
+    {
+        try
         {
             if (_userMessagePage != null)
             {
@@ -56,17 +57,16 @@ namespace TimeClock.Helpers
                 if (_pauseAndRestartPageTimeouts)
                     GlobalResources.Current.GoToMainOnPageTimeout = true;
 
-                _userMessagePage.Navigation.PopModalAsync(false);
+                _navigation.isFromModal = true;
+                _ = await _userMessagePage.Navigation.PopModalAsync(false);
 
                 if (_resetNavigationAndGoToMainOnClose)
-                    _ = Helpers.Navigation.ResetNavigationAndGoToRoot();
+                  if (_navigation != null) { await _navigation.ResetNavigationAndGoToRoot(); }
             }
+        }
+        catch (Exception ex)
+        {
+            await Logging.Log(_database, ex, "UserMessages.cs Close Exception");
         }
     }
 }
-
-/**
-
- TODO - consider
-
-Also, the Application.Current.MainPage.Navigation.PushModalAsync and PopModalAsync methods are used for modal page navigation in .NET MAUI, just like in Xamarin.Forms. However, .NET MAUI introduces a new handler-based architecture for navigation which you might want to consider using. */

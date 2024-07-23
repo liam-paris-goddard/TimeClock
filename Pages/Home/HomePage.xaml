@@ -1,41 +1,33 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<app:UntimedContentPage
-    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:app="clr-namespace:TimeClock"
-    xmlns:controls="clr-namespace:TimeClock.Controls;assembly=TimeClock"
-    x:Class="TimeClock.HomePage">
-
-    <StackLayout
-        Spacing="30">
-
-        <controls:PageHeader />
-
-        <Image
-            Source="welcome.png"
-            HorizontalOptions="Center"
-            Margin="0, 0, 0, 15">
-            <Image.WidthRequest>
-                <OnPlatform
-                    x:TypeArguments="x:Double"
-                    iOS="550"
-                    Android="550"
-                    WinPhone="750" />
-            </Image.WidthRequest>
-        </Image>
-
-        <controls:LetterButtons
-            x:Name="letterButtons" />
-
-        <controls:PageFooter
-            x:Name="footer"
-            ShowSchoolLabel="True"
-            ShowLeftButton="False"
-            ShowCenterButton="True"
-            ShowLogo="True"
-            CenterButtonIsExitEmpMode="True"
-            ShowRightButton="False" />
-
+<app:UntimedContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                        xmlns:app="clr-namespace:Goddard.Clock"
+                        xmlns:controls="clr-namespace:Goddard.Clock.Controls;assembly=Goddard.Clock"
+                        x:Class="Goddard.Clock.HomePage"
+                        xmlns:viewModels="clr-namespace:Goddard.Clock.ViewModels"
+                        xmlns:local="clr-namespace:Goddard.Clock">
+    <StackLayout    x:DataType="local:HomePage"
+    Spacing="{Binding StackLayoutSpacing}"
+                 Background="{StaticResource GradientPageBackground}">
+        <controls:PageHeader>
+            <controls:PageHeader.BindingContext>
+                <Binding Source="{x:Static local:App.Locator}"
+                         Path="PageHeaderViewModel" />
+            </controls:PageHeader.BindingContext>
+        </controls:PageHeader>
+        <Image        x:DataType="local:HomePage"
+               Source="welcome.png"
+               IsVisible="{Binding WelcomeImageVisible}"
+               HorizontalOptions="Center"
+               Margin="0, 0, 0, 15"
+               WidthRequest="{Binding WelcomeImageWidth}" />
+        <controls:LetterButtons x:Name="letterButtons" />
+        <controls:PageFooter x:Name="footer"
+                             ShowSchoolLabel="True"
+                             ShowLeftButton="False"
+                             ShowCenterButton="True"
+                             ShowLogo="True"
+                             CenterButtonIsExitEmpMode="True"
+                             ShowRightButton="False" />
     </StackLayout>
-
 </app:UntimedContentPage>

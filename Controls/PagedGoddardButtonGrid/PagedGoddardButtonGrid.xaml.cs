@@ -1,56 +1,112 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using Microsoft.Maui.Controls;
+﻿using Microsoft.Maui.Devices;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using Goddard.Clock;
 
-namespace TimeClock.Controls
+namespace Goddard.Clock.Controls
 {
-    [DebuggerDisplay("Text = {Text}, Value = {Value}")]
     public class PagedGoddardButtonGridItem
     {
         public string? Text;
         public string? Value;
     }
 
-    public partial class PagedGoddardButtonGrid : View
+
+    public partial class PagedGoddardButtonGrid : BaseContentView
     {
-        private const int ColumnCount = 5;
-        private const int RowCount = 5;
+        private int ColumnCount;
+        private int RowCount;
+        private double _buttonFontSize;
+        public double ButtonFontSize
+        {
+            get => _buttonFontSize;
+            set
+            {
+                _buttonFontSize = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private double _buttonHeight;
+        public double ButtonHeight
+        {
+            get => _buttonHeight;
+            set
+            {
+                _buttonHeight = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public double _buttonWidth;
+        public double ButtonWidth
+        {
+            get => _buttonWidth;
+            set
+            {
+                _buttonWidth = value;
+                OnPropertyChanged();
+            }
+        }
+
         private const string PreviousButtonValue = "[[NAV_PREVIOUS]]";
         private const string NextButtonValue = "[[NAV_NEXT]]";
 
         public static readonly BindableProperty ItemsProperty =
-            BindableProperty.CreateProperty<PagedGoddardButtonGrid, List<PagedGoddardButtonGridItem>>(p => p.Items, default, propertyChanged: ItemsPropery_Changed);
+            BindableProperty.Create(nameof(Items), typeof(List<PagedGoddardButtonGridItem>), typeof(PagedGoddardButtonGrid), default, propertyChanged: ItemsProperty_Changed);
 
-        public event EventHandler<ButtonClickEventArgs> ButtonClickHandler;
+        public event EventHandler<ButtonClickEventArgs>? ButtonClickHandler;
 
-        public static void ItemsPropery_Changed(BindableObject bindable, object oldValue, object newValue)
+        protected override void OnDeviceInformationChanged(string propertyName)
+        {
+            if (propertyName == "DeviceWidth" || propertyName == "GlobalOrientation" || propertyName == "DeviceHeight")
+            {
+                SetResponsiveVars();
+                updatePagedContent();
+                CreateButtons();
+            }
+
+        }
+
+
+        public static void ItemsProperty_Changed(BindableObject bindable, object oldValue, object newValue)
         {
             var pagedGoddardButtonGrid = (PagedGoddardButtonGrid)bindable;
             pagedGoddardButtonGrid.InitializePagedData();
-            pagedGoddardButtonGrid.CreateButtons();
+
         }
 
         public List<PagedGoddardButtonGridItem> Items
         {
-            get => (List<PagedGoddardButtonGridItem>)ItemsProperty.GetValue(this);
-            set => ItemsProperty.SetValue(this, value);
+            get => (List<PagedGoddardButtonGridItem>)GetValue(ItemsProperty);
+            set => SetValue(ItemsProperty, value);
         }
 
         private Dictionary<int, List<PagedGoddardButtonGridItem>> _pagedItems = new Dictionary<int, List<PagedGoddardButtonGridItem>>();
 
         protected int PageNumber { get; set; }
+
+        public PagedGoddardButtonGrid()
+        {
+            SetResponsiveVars();
+            InitializeComponent();
+        }
         private void InitializePagedData()
         {
-            var pageReadyItems = new List<PagedGoddardButtonGridItem>();
+            SetResponsiveVars();
+            updatePagedContent();  
+            CreateButtons();
+        }
 
+       public void updatePagedContent() {
+            _pagedItems.Clear();
             int myPageNumber = 0;
             _pagedItems.Add(0, new List<PagedGoddardButtonGridItem>());
 
             foreach (var item in Items)
             {
                 var myPageItems = _pagedItems[myPageNumber];
+
 
                 if (myPageItems.Count == (ColumnCount * RowCount - 1) && item != Items.Last())
                 {
@@ -67,9 +123,56 @@ namespace TimeClock.Controls
             }
         }
 
+        private void SetResponsiveVars()
+        {
+            ColumnCount = 5;
+            RowCount = 5;
+            ButtonFontSize = 15;
+            ButtonHeight = 60;
+            ButtonWidth = 180;
+            if (DeviceType == "small")
+            {
+                if (DeviceOrientation == DisplayOrientation.Portrait)
+                {
+                    ColumnCount = 3;
+                    RowCount = 7;
+                    //ButtonHeight = 70;
+                    //ButtonWidth
+                    //ButtonFontSize
+                }
+                else
+                {
+                    ColumnCount = 5;
+                    RowCount = 4;
+                    //ButtonHeight
+                    //ButtonWidth
+                    //ButtonFontSize
+                }
+            }
+            else 
+            {
+                if (DeviceOrientation == DisplayOrientation.Portrait)
+                {
+                    ColumnCount = 3;
+                    RowCount = 7;
+                } else
+                {
+                    ColumnCount = 5;
+                    RowCount = 5;
+                }
+            }
+        }
+
         private void CreateButtons()
         {
-            for (int i = 0; i < _pagedItems[PageNumber].Count(); i++)
+            buttonGrid.ColumnDefinitions.Clear();
+            buttonGrid.RowDefinitions.Clear();
+            buttonGrid.Children.Clear();
+            for (int i = 0; i < ColumnCount; i++)
+                buttonGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            for (int i = 0; i < RowCount; i++)
+                buttonGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
+            for (int i = 0; i < _pagedItems[PageNumber].Count; i++)
             {
                 var itemsInPage = _pagedItems[PageNumber];
                 var rowNumber = i / ColumnCount;
@@ -81,9 +184,11 @@ namespace TimeClock.Controls
                 var button = new GoddardButton()
                 {
                     Text = buttonText,
-                    StyleId = buttonValue
+                    StyleId = buttonValue,
+                    FontSize = ButtonFontSize,
+                    HeightRequest = ButtonHeight,
+                    WidthRequest = ButtonWidth,
                 };
-
                 if (buttonValue == PreviousButtonValue)
                 {
                     button.Clicked += NavButtonClick;
@@ -100,13 +205,15 @@ namespace TimeClock.Controls
                     button.Clicked += ButtonClick;
                 }
 
-                buttonGrid.Children.Add(button, columnNumber, columnNumber + 1, rowNumber, rowNumber + 1);
+                buttonGrid.Add(button, columnNumber, rowNumber);
             }
         }
 
-        private void NavButtonClick(object sender, EventArgs e)
+        private void NavButtonClick(object? sender, EventArgs e)
         {
-            for (int i = buttonGrid.Children.Count() - 1; i >= 0; i--)
+            // iOS crashes when the nav button tries to remove itself, so we're just hiding the current buttons, then on subsequent page changes, 
+            // this for statement removes the old hidden buttons so they don't build up with each page navigation.  
+            /*for (int i = buttonGrid.Children.Count() - 1; i >= 0; i--)
             {
                 if (!buttonGrid.Children[i].IsVisible)
                     buttonGrid.Children.RemoveAt(i);
@@ -114,7 +221,8 @@ namespace TimeClock.Controls
 
             foreach (var child in buttonGrid.Children)
                 child.IsVisible = false;
-
+*/
+            buttonGrid.Children.Clear();
             var button = (GoddardButton)sender;
 
             if (button.StyleId == PreviousButtonValue)
@@ -125,13 +233,16 @@ namespace TimeClock.Controls
             CreateButtons();
         }
 
-        protected void ButtonClick(object sender, EventArgs e)
+        protected void ButtonClick(object? sender, EventArgs e)
         {
-            var selectedValue = ((Button)sender).StyleId;
-            var selectedText = ((Button)sender).Text;
+            if (sender is Button button)
+            {
+                var selectedValue = button.StyleId;
+                var selectedText = button.Text;
 
-            var buttonClickEventArgs = new ButtonClickEventArgs() { SelectedValue = selectedValue, SelectedText = selectedText };
-            ButtonClickHandler?.Invoke(this, buttonClickEventArgs);
+                var buttonClickEventArgs = new ButtonClickEventArgs() { SelectedValue = selectedValue, SelectedText = selectedText };
+                ButtonClickHandler?.Invoke(this, buttonClickEventArgs);
+            }
         }
 
         public class ButtonClickEventArgs : EventArgs

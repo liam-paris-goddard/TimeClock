@@ -1,6 +1,6 @@
 ﻿using Foundation;
 
-namespace TimeClock;
+namespace Goddard.Clock;
 
 [Register("AppDelegate")]
 public class AppDelegate : MauiUIApplicationDelegate

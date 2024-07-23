@@ -1,23 +1,17 @@
-using System;
-using Microsoft.Maui.Controls;
-using Microsoft.Maui.Controls.Xaml;
-
-namespace TimeClock
+namespace Goddard.Clock;
+[XamlCompilation(XamlCompilationOptions.Compile)]
+public partial class UserMessagePage : ContentPage
 {
-    [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class UserMessagePage : ContentPage
+    public UserMessagePage(string message, bool showActivityIndicator)
     {
-        public UserMessagePage(string message, bool showActivityIndicator)
-        {
-            InitializeComponent();
-            messageLabel.Text = message;
-            activityIndicator.IsRunning = showActivityIndicator;
-            activityIndicator.IsVisible = showActivityIndicator;
-        }
+        InitializeComponent();
+        messageLabel.Text = message;
+        activityIndicator.IsRunning = showActivityIndicator;
+        activityIndicator.IsVisible = showActivityIndicator;
+    }
 
-        protected override bool OnBackButtonPressed()
-        {
-            return true;
-        }
+    protected override bool OnBackButtonPressed()
+    {
+        return true;
     }
 }

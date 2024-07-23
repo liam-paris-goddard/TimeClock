@@ -1,9 +1,4 @@
-﻿using System;
-using Microsoft.Maui.Controls;
-
-namespace TimeClock.Controls
+﻿namespace Goddard.Clock.Controls;
+public class BorderlessEntry : Entry
 {
-    public class BorderlessEntry : Entry
-    {
-    }
 }

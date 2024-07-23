@@ -1,18 +1,15 @@
-using Microsoft.Maui.Controls;
-using SQLite;
-using System;
+﻿using SQLite;
 
-namespace TimeClock.Models
+namespace Goddard.Clock.Models
 {
     public class AllowedSchool : LocalEntity
     {
-        public AllowedSchool() : base() { }
-
+        public AllowedSchool()
+            : base()
+        { }
         [Indexed]
         public string? State { get; set; }
-
         public string? Name { get; set; }
-
         public string? Number { get; set; }
     }
 }

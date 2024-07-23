@@ -1,24 +1,17 @@
-﻿using TimeClock.Helpers;
-using TimeClock.Models;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Goddard.Clock.Helpers;
+using Goddard.Clock.Models;
+using Goddard.Clock.Data;
+using CommunityToolkit.Maui.Views;
 
-using Microsoft.Maui.Controls;
-using Microsoft.Maui.Controls.Xaml;
-
-namespace TimeClock
+namespace Goddard.Clock
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class CheckInPage : TimedContentPage
     {
         public const int MAX_PERSON_COUNT = 6;
         private bool _isSigRequired;
+        private readonly ClockDatabase _database = App.Database ?? throw new ArgumentNullException(nameof(App.Database));
+        private readonly NavigationService _navigation = App.NavigationService ?? throw new ArgumentNullException(nameof(App.NavigationService));
 
         public List<EventExtended> ClockEvents { get; set; }
         public long UserID { get; set; }
@@ -34,8 +27,8 @@ namespace TimeClock
 
                 if (ClockEvents.Count < 1 || ClockEvents.Count > MAX_PERSON_COUNT)
                 {
-                    //TODO: log / throw ex?  not sure yet how we are handling errors
-                    DisplayAlert("Error", String.Format("1 to {0} persons to check in/out expected.", MAX_PERSON_COUNT), "OK");
+
+                    _ = DisplayAlert("Error", String.Format("1 to {0} persons to check in/out expected.", MAX_PERSON_COUNT), "OK");
                 }
 
                 IsEmployeeClockEvent = ClockEvents.First().UserType == UserType.Employee;
@@ -43,15 +36,15 @@ namespace TimeClock
                 // note that if employee is checking in/out children, we purposely check BypassSignatureParents, not BypassSignatureEmployees
                 if (IsEmployeeClockEvent)
                 {
-                    instructionsContainer.IsVisible = Helpers.Settings.BypassSignatureEmployees;
-                    drawingView.IsVisible = !Helpers.Settings.BypassSignatureEmployees;
-                    _isSigRequired = !Helpers.Settings.BypassSignatureEmployees;
+                    instructionsContainer.IsVisible = Settings.BypassSignatureEmployees;
+                    drawingView.IsVisible = !Settings.BypassSignatureEmployees;
+                    _isSigRequired = !Settings.BypassSignatureEmployees;
                 }
                 else
                 {
-                    instructionsContainer.IsVisible = Helpers.Settings.BypassSignatureParents;
-                    drawingView.IsVisible = !Helpers.Settings.BypassSignatureParents;
-                    _isSigRequired = !Helpers.Settings.BypassSignatureParents;
+                    instructionsContainer.IsVisible = Settings.BypassSignatureParents;
+                    drawingView.IsVisible = !Settings.BypassSignatureParents;
+                    _isSigRequired = !Settings.BypassSignatureParents;
                 }
 
 
@@ -81,22 +74,27 @@ namespace TimeClock
                     var nameLabelText = ClockEvents[i].TargetPersonName;
                     var timeLabelText = String.Format("{0}  {1}", ClockEvents[i].Type == ClockEventType.Out ? "CLOCK OUT" : "CLOCK IN", DateTime.Now.ToString("h:mm tt"));
 
-                    eventsGrid.Children.Add(new Label() { Text = nameLabelText, Margin = new Thickness(0, 0, 25, 0) }, nameLabelCol, nameLabelRow);
-                    eventsGrid.Children.Add(new Label() { Text = timeLabelText, FontAttributes = FontAttributes.Italic | FontAttributes.Bold }, timeLabelCol, timeLabelRow);
+                    eventsGrid.Add(new Label() { Text = nameLabelText, Margin = new Thickness(0, 0, 25, 0) }, nameLabelCol, nameLabelRow);
+                    eventsGrid.Add(new Label() { Text = timeLabelText, FontAttributes = FontAttributes.Italic | FontAttributes.Bold }, timeLabelCol, timeLabelRow);
                 }
             }
             catch (Exception ex)
             {
-                TimeClock.Helpers.Logging.Log(ex);
+                _ = Logging.Log(_database, ex);
                 throw;
             }
         }
 
-        protected async void okFooterButtonClick(object sender, EventArgs e)
+        void Clear_Button_Clicked(object sender, EventArgs e)
+        {
+            drawingView.Clear();
+        }
+
+        protected async void okFooterButtonClick(object? sender, EventArgs e)
         {
             try
             {
-                if (_isSigRequired && !drawingView.Points.Any())
+                if (_isSigRequired && !drawingView.Lines.Any())
                 {
                     await DisplayAlert("", "please sign the signature pad", "OK");
                     return;
@@ -104,23 +102,25 @@ namespace TimeClock
 
                 byte[] signatureBYTES = new byte[] { };
 
-                if (drawingView.Points.Any())
+                if (drawingView.Lines.Any())
                 {
-                    var imageSource = await drawingView.ToImageSourceAsync();
-                    var streamImageSource = (StreamImageSource)imageSource;
-                    var stream = await streamImageSource.Stream(CancellationToken.None);
-                    using (var memoryStream = new MemoryStream())
+                    var imageStream = await drawingView.GetImageStream(300, 300);
+
+                    var signatureMemoryStream = imageStream as MemoryStream;
+                    if (signatureMemoryStream == null)
                     {
-                        await stream.CopyToAsync(memoryStream);
-                        signatureBYTES = memoryStream.ToArray();
+                        signatureMemoryStream = new MemoryStream();
+                        imageStream.CopyTo(signatureMemoryStream);
                     }
+
+                    signatureBYTES = signatureMemoryStream.ToArray();
                 }
 
                 var events = new List<Event>();
                 foreach (var ex in ClockEvents)
                 {
                     var myEvent = ex.ConvertToEvent();
-                    if (!drawingView.Points.Any())
+                    if (drawingView.Lines.Any())
                     {
                         myEvent.Signature = signatureBYTES;
                     }
@@ -128,18 +128,18 @@ namespace TimeClock
                     events.Add(myEvent);
                 }
 
-                var savedResults = await App.Database.EnterClockEvents(events);
+                var savedResults = await _database.EnterClockEvents(events);
 
-                Device.BeginInvokeOnMainThread(() =>
+                MainThread.BeginInvokeOnMainThread(() =>
                 {
                     var msg = savedResults ? "sign in/out successful" : "sign in/out failed";
-                    var modalUserMessage = new ModalUserMessage(msg, false, false, 4, true);
+                    var modalUserMessage = new ModalUserMessage(_navigation, _database, msg, false, false, 4, true);
                     modalUserMessage.Show();
                 });
             }
             catch (Exception ex)
             {
-                TimeClock.Helpers.Logging.Log(ex);
+                _ = Logging.Log(_database, ex);
                 throw;
             }
         }

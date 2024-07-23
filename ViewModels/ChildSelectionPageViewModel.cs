@@ -1,80 +1,74 @@
-﻿using TimeClock.Controls;
-using TimeClock.Helpers;
-using TimeClock.Models;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using Microsoft.Maui.Controls;
+﻿using Goddard.Clock.Controls;
+using Goddard.Clock.Models;
 
-namespace TimeClock
+
+namespace Goddard.Clock.ViewModels;
+public class ChildSelectionPageViewModel : BaseViewModel
 {
-    public class ChildSelectionPageViewModel : BaseViewModel
+    private long? _employeeUserPersonId;
+    public long? EmployeeUserPersonId
     {
-        private long? _employeeUserPersonId;
-        public long? EmployeeUserPersonId
+        get { return _employeeUserPersonId; }
+        set
         {
-            get { return _employeeUserPersonId; }
-            set
-            {
-                _employeeUserPersonId = value;
-                OnPropertyChanged();
-            }
+            _employeeUserPersonId = value;
+            OnPropertyChanged();
         }
+    }
 
-        private string _employeeUserFN;
-        public string EmployeeUserFN
+    private string? _employeeUserFN;
+    public string EmployeeUserFN
+    {
+        get { return _employeeUserFN!; }
+        set
         {
-            get { return _employeeUserFN; }
-            set
-            {
-                _employeeUserFN = value;
-                OnPropertyChanged();
-            }
+            _employeeUserFN = value;
+            OnPropertyChanged();
         }
+    }
 
-        private string _employeeUserLN;
-        public string EmployeeUserLN
+    private string? _employeeUserLN;
+    public string EmployeeUserLN
+    {
+        get { return _employeeUserLN!; }
+        set
         {
-            get { return _employeeUserLN; }
-            set
-            {
-                _employeeUserLN = value;
-                OnPropertyChanged();
-            }
+            _employeeUserLN = value;
+            OnPropertyChanged();
         }
+    }
 
-        private List<Child> _children;
-        public List<Child> Children
+    private List<Child>? _children;
+    public List<Child> Children
+    {
+        get { return _children!; }
+        set
         {
-            get { return _children; }
-            set
-            {
-                _children = value;
-                OnPropertyChanged();
+            _children = value;
+            OnPropertyChanged();
 
-                if (_children == null)
-                    return;
+            if (_children == null)
+                return;
 
-                GridItems = _children
-                    .Select(p => new PagedGoddardButtonGridItem
-                    {
-                        Text = p.Fullname,
-                        Value = p.FamilyID.ToString(),
-                    })
-                    .OrderBy(p => p.Text)
-                    .ToList();
-            }
+            GridItems = _children
+                .Select(p => new PagedGoddardButtonGridItem
+                {
+                    Text = p.Fullname,
+                    Value = p.FamilyID.ToString(),
+                })
+                .OrderBy(p => p.Text)
+                .ToList();
         }
+    }
 
-        private List<PagedGoddardButtonGridItem> _gridItems;
-        public List<PagedGoddardButtonGridItem> GridItems
+    private List<PagedGoddardButtonGridItem>? _gridItems;
+    public List<PagedGoddardButtonGridItem> GridItems
+    {
+        get { return _gridItems!; }
+        set
         {
-            get { return _gridItems; }
-            set
-            {
-                _gridItems = value;
-                OnPropertyChanged();
-            }
+            _gridItems = value;
+            OnPropertyChanged();
         }
     }
 }

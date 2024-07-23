@@ -1,6 +1,4 @@
-using System;
-
-namespace TimeClock.Models
+﻿namespace Goddard.Clock.Models
 {
     public enum UserType
     {
@@ -17,6 +15,7 @@ namespace TimeClock.Models
 
     public class UpdatePIN : LocalEntity
     {
+
         public UserType UserType { get; set; }
         public Action Action { get; set; }
         public long UserID { get; set; }

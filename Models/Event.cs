@@ -1,7 +1,7 @@
-using SQLite;
-using System;
+﻿using SQLite;
+using System.Runtime.Serialization;
 
-namespace TimeClock.Models
+namespace Goddard.Clock.Models
 {
     public enum ClockEventType
     {
@@ -11,22 +11,21 @@ namespace TimeClock.Models
 
     public class Event : LocalEntity
     {
-        public Event() : base() { }
-
+        public Event()
+            : base()
+        { }
         [Indexed]
         public ClockEventType Type { get; set; }
-
         [Indexed]
         public UserType UserType { get; set; }
-
         [Indexed]
         public DateTime Occurred { get; set; }
-
         [Indexed]
         public long TargetPersonID { get; set; }
-
         [Indexed]
         public long UserPersonID { get; set; }
+        [IgnoreDataMember]
+        public string? ImageKey { get; set; }
 
         public byte[]? Signature { get; set; }
     }
@@ -35,34 +34,31 @@ namespace TimeClock.Models
     {
         [Indexed]
         public ClockEventType Type { get; set; }
-
         [Indexed]
         public UserType UserType { get; set; }
-
         [Indexed]
         public DateTime Occurred { get; set; }
-
         [Indexed]
         public long TargetPersonID { get; set; }
-
         [Indexed]
         public long UserPersonID { get; set; }
-
         public string? UserPersonName { get; set; }
-
         public string? TargetPersonName { get; set; }
 
-        public string ExplanationText => Type == ClockEventType.In ? "Clocked-In" : "Clocked-Out";
+        public string ExplanationText
+        {
+            get { return Type == ClockEventType.In ? "Clocked-In" : "Clocked-Out"; }
+        }
 
         public Event ConvertToEvent()
         {
-            return new Event
+            return new Models.Event()
             {
-                Type = Type,
-                UserType = UserType,
-                Occurred = Occurred,
-                TargetPersonID = TargetPersonID,
-                UserPersonID = UserPersonID
+                Type = this.Type,
+                UserType = this.UserType,
+                Occurred = this.Occurred,
+                TargetPersonID = this.TargetPersonID,
+                UserPersonID = this.UserPersonID
             };
         }
     }

@@ -1,8 +1,12 @@
-﻿using Microsoft.Maui.Controls;
+﻿using Microsoft.Maui.Platform;
 
-namespace TimeClock.Controls
+namespace Goddard.Clock.Controls;
+public class GoddardFrame : Frame
 {
-    public class GoddardFrame : Frame
+    public GoddardFrame()
     {
+        BackgroundColor = ConstantsStatics.GoddardMediumLightColor;
+        BorderColor = ConstantsStatics.GoddardLightestColor;
+        CornerRadius = 14;
     }
 }

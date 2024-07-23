@@ -1,47 +1,42 @@
-﻿using System;
-using Microsoft.Maui.Controls;
-
-namespace TimeClock.Controls
+﻿namespace Goddard.Clock.Controls;
+public enum ReturnButtonType
 {
-    public enum ReturnButtonType
+    None,
+    Next
+}
+
+public class BorderedEntry : Entry
+{
+    public BorderedEntry()
     {
-        None,
-        Next
+        TextChanged += BorderedEntry_TextChanged;
     }
 
-    public class BorderedEntry : Entry
+    private void BorderedEntry_TextChanged(object? sender, TextChangedEventArgs e)
     {
-        public BorderedEntry()
-        {
-            this.TextChanged += BorderedEntry_TextChanged;
-        }
+        GlobalResources.Current.UpdateLastUserInteraction();
+    }
 
-        private void BorderedEntry_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            GlobalResources.Current.UpdateLastUserInteraction();
-        }
+    public static readonly BindableProperty ReturnButtonProperty =
+        BindableProperty.Create(nameof(ReturnButton), typeof(ReturnButtonType), typeof(BorderedEntry), ReturnButtonType.None);
 
-        public static readonly BindableProperty ReturnButtonProperty =
-            BindableProperty.Create("ReturnButton", typeof(ReturnButtonType), typeof(BorderedEntry), ReturnButtonType.None);
+    public ReturnButtonType ReturnButton
+    {
+        get => (ReturnButtonType)GetValue(ReturnButtonProperty);
+        set => SetValue(ReturnButtonProperty, value);
+    }
 
-        public ReturnButtonType ReturnButton
-        {
-            get => (ReturnButtonType)GetValue(ReturnButtonProperty);
-            set => SetValue(ReturnButtonProperty, value);
-        }
+    public static readonly BindableProperty NextViewProperty =
+        BindableProperty.Create(nameof(NextView), typeof(View), typeof(BorderedEntry));
 
-        public static readonly BindableProperty NextViewProperty =
-            BindableProperty.Create("NextView", typeof(View), typeof(BorderedEntry));
+    public View NextView
+    {
+        get => (View)GetValue(NextViewProperty);
+        set => SetValue(NextViewProperty, value);
+    }
 
-        public View NextView
-        {
-            get => (View)GetValue(NextViewProperty);
-            set => SetValue(NextViewProperty, value);
-        }
-
-        public void OnNext()
-        {
-            NextView?.Focus();
-        }
+    public void OnNext()
+    {
+        _ = (NextView?.Focus());
     }
 }

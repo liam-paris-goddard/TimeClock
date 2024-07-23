@@ -1,53 +1,67 @@
 using Foundation;
-using TimeClock.Helpers;
-using Microsoft.Maui;
-using Microsoft.Maui.Controls;
-using System;
 using System.Diagnostics;
 using UIKit;
-using System.Security.Cryptography;
 
-namespace TimeClock.iOS.Helpers
+namespace Goddard.Clock.Helpers;
+public class AutoUpdateHelper : IAutoUpdateHelper
 {
-    public class AutoUpdateHelper : IAutoUpdateHelper
+    public async void DownloadInstallUpdate()
     {
-        public void DownloadInstallUpdate()
+        Debug.WriteLine("Downloading and Installing Update");
+        var action = await Application.Current.MainPage.DisplayActionSheet("There is an update available, press Update now to open the installation webpage. click anywhere else to dimiss this message",
+                "Cancel",
+                null,
+                "Update now"
+        );
+        if (action == "Update now")
         {
-            Debug.WriteLine("Downloading and Installing Update");
-            UIApplication.SharedApplication.OpenUrl(NSUrl.FromString(ConstantsStatics.InstallationURL));
+            // Open the link in a web browser
+            await Launcher.OpenAsync(new Uri(ConstantsStatics.InstallURL));
         }
+    }
 
-        public string GetLocalVersionNumber()
-        {
-            //return NSBundle.MainBundle.InfoDictionary?["CFBundleVersion"].ToString();
-            return ConstantsStatics.DeployVersion;
-        }
+    public string GetLocalVersionNumber()
+    {
+        //return NSBundle.MainBundle.InfoDictionary?["CFBundleVersion"].ToString();
+        return DeployVersion.VersionNumber;
+    }
 
-        public bool IsUpdateAvailable()
+    public async Task<bool> IsUpdateAvailableAsync()
+    {
+        return await Task.Run(() =>
         {
             try
             {
                 Debug.WriteLine("Checking for App Update");
 
-                var serverPList = NSDictionary.FromUrl(NSUrl.FromString(ConstantsStatics.PListURL));
-                var items = serverPList["items"] as NSArray;
-                if (items != null && items.Count > 0)
+                NSMutableDictionary? serverPList = null;
+                if (!string.IsNullOrWhiteSpace(ConstantsStatics.PListURL))
                 {
-                    var itemDictionary = items.GetItem<NSDictionary>(items.Count - 1);
-                    if (itemDictionary != null)
+                    var url = NSUrl.FromString(ConstantsStatics.PListURL);
+                    if (url != null)
+                        serverPList = NSMutableDictionary.FromUrl(url);
+                }
+                if (serverPList != null)
+                {
+                    if (serverPList["items"] is NSArray items && items.Count > 0)
                     {
-                        var metadata = itemDictionary["metadata"] as NSDictionary;
-                        if (metadata != null)
+                        var itemDictionary = items.GetItem<NSDictionary>(items.Count - 1);
+                        if (itemDictionary != null)
                         {
-                            var serverVersion = metadata["bundle-version"]?.ToString();
-                            if (!String.IsNullOrWhiteSpace(serverVersion))
+                            var metadata = itemDictionary["metadata"] as NSDictionary;
+                            if (metadata != null)
                             {
-                                var localVersion = GetLocalVersionNumber();
-                                return IsFirstVersionArgumentLater(serverVersion, localVersion);
+                                var serverVersion = metadata["bundle-version"]?.ToString();
+                                if (!String.IsNullOrWhiteSpace(serverVersion))
+                                {
+                                    var localVersion = GetLocalVersionNumber();
+                                    return IsFirstVersionArgumentLater(serverVersion, localVersion);
+                                }
                             }
                         }
                     }
                 }
+
             }
             catch
             {
@@ -56,54 +70,24 @@ namespace TimeClock.iOS.Helpers
 
             //everything fell through to here, so assume false
             return false;
-        }
+        });
+    }
+    public bool IsFirstVersionArgumentLater(string first, string second)
+    {
+        Debug.WriteLine(String.Format("Comparing App Versions - First: {0} - Second: {1}", first, second));
 
-
-
-        public bool IsFirstVersionArgumentLater(string first, string second)
+        if (String.IsNullOrWhiteSpace(first) || String.IsNullOrWhiteSpace(second) || first.Contains("rc") || second.Contains("rc"))
         {
-            Debug.WriteLine(String.Format("Comparing App Versions - First: {0} - Second: {1}", first, second));
-
-            if (String.IsNullOrWhiteSpace(first) || String.IsNullOrWhiteSpace(second))
-            {
-                return false;
-            }
-            else if (first.ToLowerInvariant().Trim() == second.ToLowerInvariant().Trim())
-            {
-                return false;
-            }
-            else
-            {
-                return Version.Parse(first) > Version.Parse(second);
-            }
-
+            return false;
         }
+        else if (first.ToLowerInvariant().Trim() == second.ToLowerInvariant().Trim())
+        {
+            return false;
+        }
+        else
+        {
+            return Version.Parse(first) > Version.Parse(second);
+        }
+
     }
 }
-
-
-/** 
-
-todo - consider
-
-need to add to startup.Cs
-
-using TimeClock.iOS.Helpers;
-using Microsoft.Maui;
-using Microsoft.Maui.Hosting;
-
-namespace TimeClock
-{
-    public class Startup : IStartup
-    {
-        public void Configure(IAppHostBuilder appBuilder)
-        {
-            appBuilder
-                .UseMauiApp<App>()
-                .ConfigureServices(services =>
-                {
-                    services.AddSingleton<IAutoUpdateHelper, AutoUpdateHelper>();
-                });
-        }
-    }
-}*/

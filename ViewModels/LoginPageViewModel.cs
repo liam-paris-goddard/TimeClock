@@ -1,135 +1,175 @@
-﻿using TimeClock.Data;
-using TimeClock.Helpers;
-using TimeClock.Models;
-using System;
-using System.Diagnostics;
-using System.Linq;
-using Microsoft.Maui.Controls;
+﻿using Goddard.Clock.Data;
+using Goddard.Clock.Helpers;
+using Goddard.Clock.Factories;
+using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.Extensibility;
 
-namespace TimeClock
+namespace Goddard.Clock.ViewModels;
+public class LoginPageViewModel : BaseViewModel
 {
-    public class LoginPageViewModel : BaseViewModel
+    private readonly TelemetryClient _telemetryClient;
+
+    private string? _loginName;
+    private string? _password;
+    private readonly ClockDatabase? _database;
+    private readonly NavigationService? _navigation;
+
+    private readonly IServiceProvider _serviceProvider;
+    public string HeaderText
     {
-        private string _loginName;
-        private string _password;
-
-        public LoginPageViewModel()
+        get
         {
-            LoginName = Helpers.Settings.Username;
-            //Password = Helpers.Settings.Password;
-
-            LoginCommand = new Command(async () =>
-            {
-                if (LoginName == "x")
-                {
-                    await Helpers.Navigation.ResetNavigationAndGoToRoot(new TestPage());
-                    return;
-                }
-                else if (String.IsNullOrEmpty(LoginName) || String.IsNullOrEmpty(Password))
-                {
-                    await App.Current.MainPage.DisplayAlert("", "username and password are required", "OK");
-                    return;
-                }
-
-                Helpers.Settings.Username = LoginName;
-                Helpers.Settings.Password = Password;
-
-                try
-                {
-                    var msg = new ModalUserMessage("Logging in...", true, true);
-                    msg.Show();
-
-                    await RetryHelper.RetryOnExceptionAsync(3, TimeSpan.FromSeconds(5), async () =>
-                    {
-                        var allowed = await new RestService().GetAllowedSchools(LoginName);
-
-                        Helpers.Settings.IsMultiSchoolUser = false;
-                        Helpers.Settings.LastSelectedSchoolID = 0;
-                        Helpers.Settings.LastSelectedSchoolName = "";
-
-                        if (allowed == null || allowed.Count() == 0)
-                        {
-                            Helpers.Settings.Username = "";
-                            Helpers.Settings.Password = "";
-                            Password = "";
-                            msg.Close();
-                            await App.Current.MainPage.DisplayAlert("", "invalid credentials or inadequate permissions, please try again", "OK");
-                            return;
-                        }
-
-                        if (allowed.Count() == 1)
-                        {
-                            Helpers.Settings.LastSelectedSchoolID = allowed.First().ID;
-                            Helpers.Settings.LastSelectedSchoolName = allowed.First().Name;
-
-                            var config = await new RestService().GetSchoolConfiguration(Helpers.Settings.LastSelectedSchoolID);
-                            if (config != null)
-                            {
-                                Helpers.Settings.BypassSignatureEmployees = config.BypassSignatureEmployees;
-                                Helpers.Settings.BypassSignatureParents = config.BypassSignatureParents;
-                            }
-                            else
-                            {
-                                Helpers.Settings.BypassSignatureEmployees = false;
-                                Helpers.Settings.BypassSignatureParents = false;
-                            }
-
-                            msg.Close();
-                            await Helpers.Navigation.ResetNavigationAndGoToRoot();
-                        }
-                        else
-                        {
-                            Helpers.Settings.IsMultiSchoolUser = true;
-
-                            if (allowed.Count() <= 10)
-                            {
-                                var page = new SchoolSelectionPage();
-                                var vm = ((SchoolSelectionPageViewModel)page.BindingContext);
-                                vm.Schools = allowed.ToList();
-
-                                msg.Close();
-                                await Helpers.Navigation.ResetNavigationAndGoToRoot(page);
-                            }
-                            else
-                            {
-                                var page = new StateSelectionPage();
-                                var vm = ((StateSelectionPageViewModel)page.BindingContext);
-                                vm.Schools = allowed.ToList();
-
-                                msg.Close();
-                                await Helpers.Navigation.ResetNavigationAndGoToRoot(page);
-                            }
-                        }
-                    });
-                }
-                catch
-                {
-                    Helpers.Settings.Username = "";
-                    Helpers.Settings.Password = "";
-                }
-            });
+#if PRODBUILD || PILOTBUILD
+            return "Goddard Time & Attendance Clock System";
+#elif PILOTQABUILD
+            return "Goddard Time & Attendance Clock System QA Pilot";
+#else
+            return "Goddard Time & Attendance Clock System QA";
+#endif
         }
-
-        public string LoginName
-        {
-            get { return _loginName; }
-            set
-            {
-                _loginName = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public string Password
-        {
-            get { return _password; }
-            set
-            {
-                _password = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public Command LoginCommand { get; }
     }
+
+    public LoginPageViewModel(IServiceProvider serviceProvider)
+    {
+        _telemetryClient = serviceProvider.GetRequiredService<TelemetryClient>();
+        _serviceProvider = serviceProvider;
+        _database = App.Database ?? throw new ArgumentNullException(nameof(App.Database));
+        _navigation = App.NavigationService;
+        LoginName = Settings.Username;
+        Password = Settings.Password;
+
+        LoginCommand = new Command(async () =>
+        {
+            if (String.IsNullOrEmpty(LoginName) || String.IsNullOrEmpty(Password))
+            {
+                if (Application.Current?.MainPage != null)
+                    await Application.Current.MainPage.DisplayAlert("", "username and password are required", "OK");
+                return;
+            }
+
+            Settings.Username = LoginName;
+            Settings.Password = Password;
+
+            try
+            {
+                if (_navigation != null && _database != null)
+                {
+                    var msg = new ModalUserMessage(_navigation, _database, "Logging in...", true, true);
+                    msg.Show();
+                    await RetryHelper.RetryOnExceptionAsync(3, TimeSpan.FromSeconds(5), async () =>
+    {
+        try
+        {
+            var allowed = await new RestService().GetAllowedSchools(LoginName);
+            Settings.IsMultiSchoolUser = false;
+            Settings.LastSelectedSchoolID = 0;
+            Settings.LastSelectedSchoolName = "";
+            if (allowed == null || allowed.Length == 0)
+            {
+                Settings.Username = "";
+                Settings.Password = "";
+                LoginName = "";
+                Password = "";
+                await msg.Close();
+                MainThread.BeginInvokeOnMainThread(async () =>
+                {
+                    if (Application.Current?.MainPage != null)
+                        await Application.Current.MainPage.DisplayAlert("", "invalid credentials or inadequate permissions, please try again", "OK");
+
+                });
+                return;
+            }
+            if (allowed.Length == 1)
+            {
+                Settings.LastSelectedSchoolID = allowed.First().ID;
+                Settings.LastSelectedSchoolName = allowed?.First().Name ?? "";
+
+                var config = await new RestService().GetSchoolConfiguration(Settings.LastSelectedSchoolID);
+                if (config != null)
+                {
+                    Settings.BypassSignatureEmployees = config.BypassSignatureEmployees;
+                    Settings.BypassSignatureParents = config.BypassSignatureParents;
+                }
+                else
+                {
+                    Settings.BypassSignatureEmployees = false;
+                    Settings.BypassSignatureParents = false;
+                }
+
+                await msg.Close();
+                if (_navigation != null) { 
+                    _telemetryClient.TrackEvent("Login", new Dictionary<string, string> { { "Username", LoginName } });        
+                    _telemetryClient.Flush();            
+                    await _navigation.ResetNavigationAndGoToRoot(); 
+                }
+            }
+            else
+            {
+                Settings.IsMultiSchoolUser = true;
+
+                if (allowed.Length <= 10)
+                {
+                    var factory = _serviceProvider.GetRequiredService<ISchoolSelectionPageFactory>();
+                    var schools = allowed.ToList();
+                    var page = factory.Create(schools);
+                    await msg.Close();
+                    _telemetryClient.TrackEvent("Login", new Dictionary<string, string> { { "Username", LoginName } });    
+                    _telemetryClient.Flush();                
+
+                    await _navigation.ResetNavigationAndGoToRoot(page);
+                }
+                else
+                {
+                    var factory = _serviceProvider.GetRequiredService<IStateSelectionPageFactory>();
+                    var page = factory.Create(allowed.ToList());
+                    await msg.Close();
+
+                    _telemetryClient.TrackEvent("Login", new Dictionary<string, string> { { "Username", LoginName } });
+                    _telemetryClient.Flush();                    
+                    await _navigation.ResetNavigationAndGoToRoot(page);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    });
+
+                }
+                else
+                {
+                    throw new Exception("Navigation or Database is null");
+                }
+
+            }
+            catch
+            {
+                Settings.Username = "";
+                Settings.Password = "";
+            }
+        });
+    }
+
+    public string LoginName
+    {
+        get { return _loginName!; }
+        set
+        {
+            _loginName = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string Password
+    {
+        get { return _password!; }
+        set
+        {
+            _password = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public Command LoginCommand { get; }
 }

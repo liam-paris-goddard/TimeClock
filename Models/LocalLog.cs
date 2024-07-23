@@ -1,6 +1,4 @@
-using System;
-
-namespace TimeClock.Models
+﻿namespace Goddard.Clock.Models
 {
     public class LocalLog : LocalEntity
     {

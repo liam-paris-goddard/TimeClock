@@ -1,82 +1,63 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
-<ContentView
-    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:controls="clr-namespace:TimeClock.Controls;assembly=TimeClock"
-    x:Class="TimeClock.Controls.PageFooter"
-    VerticalOptions="EndAndExpand"
-    Margin="0, 0, 0, 40">
-
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<controls:BaseContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                          xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                          xmlns:controls="clr-namespace:Goddard.Clock.Controls;assembly=Goddard.Clock"
+                          x:Class="Goddard.Clock.Controls.PageFooter"
+                          VerticalOptions="EndAndExpand"
+                          HorizontalOptions="FillAndExpand"
+                          Margin="40, 40">
     <ContentView.Resources>
         <ResourceDictionary>
-            <Style
-                TargetType="controls:GoddardButton">
-                <Setter
-                    Property="HorizontalOptions"
-                    Value="Center" />
-                <Setter
-                    Property="VerticalOptions"
-                    Value="Center" />
-                <Setter
-                    Property="FontSize"
-                    Value="32" />
-                <Setter
-                    Property="HeightRequest"
-                    Value="75" />
-                <Setter
-                    Property="WidthRequest"
-                    Value="170" />
+            <Style TargetType="controls:GoddardButton">
+                <Setter Property="HorizontalOptions"
+                        Value="Center" />
+                <Setter Property="VerticalOptions"
+                        Value="Center" />
+                        <Setter x:DataType="controls:PageFooter"
+                        Property="FontSize"
+                        Value="{Binding ButtonFontSize}" />
+                <Setter x:DataType="controls:PageFooter" Property="HeightRequest"
+                        Value="{Binding ButtonHeightSize}" />
+                <Setter x:DataType="controls:PageFooter" Property="WidthRequest"
+                        Value="{Binding ButtonWidthSize}" />
             </Style>
         </ResourceDictionary>
     </ContentView.Resources>
-
-    <Grid
-        VerticalOptions="End"
-        HorizontalOptions="Fill"
-        RowSpacing="3"
-        ColumnSpacing="3">
-
-        <controls:GoddardButton
-            x:Name="leftButton"
-            Margin="60, 0, 0, 0"
-            Clicked="LeftButtonClick" />
-
-        <Image
-            x:Name="logoImage"
-            Grid.Column="1"
-            Source="GoddardLogo_FullColor.png"
-            HorizontalOptions="Center" />
-
-        <Label
-            x:Name="centerTextLabel"
-            Grid.Column="1"
-            HorizontalOptions="Center"
-            VerticalOptions="CenterAndExpand"
-            IsVisible="False"
-            FontAttributes="Bold"
-            FontSize="26" />
-
-        <controls:GoddardButton
-            x:Name="centerButton"
-            Grid.Column="1"
-            Clicked="CenterButtonClick"
-            WidthRequest="250" />
-
-        <controls:GoddardButton
-            x:Name="rightButton"
-            Grid.Column="2"
-            Margin="0, 0, 60, 0"
-            Clicked="RightButtonClick" />
-
-        <Label
-            x:Name="schoolLabel"
-            Grid.Column="2"
-            HorizontalOptions="End"
-            VerticalOptions="End"
-            Margin="0, 0, 50, 18"
-            IsVisible="False"
-            FontSize="18" />
-
-    </Grid>
-
-</ContentView>
+    <StackLayout Orientation="Horizontal"
+                 HorizontalOptions="FillAndExpand"
+                 VerticalOptions="End"
+                 Spacing="10">
+        <controls:GoddardButton x:Name="leftButton"
+                                Margin="{Binding LeftButtonMargin}"
+                                Clicked="LeftButtonClick"
+                                HorizontalOptions="Start"
+                                VerticalOptions="CenterAndExpand" />
+        <Image x:Name="logoImage"
+               Source="goddardlogo_fullcolor.png"
+               VerticalOptions="CenterAndExpand"
+               HorizontalOptions="{Binding CenterHorizontalOption}"
+               WidthRequest="{Binding LogoImageWidth}" />
+        <Label x:Name="centerTextLabel"
+               HorizontalOptions="{Binding CenterHorizontalOption}"
+               VerticalOptions="CenterAndExpand"
+               IsVisible="False"
+               FontAttributes="Bold"
+               FontSize="26" />
+        <controls:GoddardButton x:Name="centerButton"
+                                Clicked="CenterButtonClick"
+                                WidthRequest="250"
+                                VerticalOptions="CenterAndExpand"
+                                HorizontalOptions="{Binding CenterHorizontalOption}" />
+        <controls:GoddardButton x:Name="rightButton"
+                                Margin="{Binding RightButtonMargin}"
+                                Clicked="RightButtonClick"
+                                VerticalOptions="CenterAndExpand"
+                                HorizontalOptions="End" />
+        <Label x:Name="schoolLabel"
+               HorizontalOptions="End"
+               VerticalOptions="CenterAndExpand"
+               Margin="0, 0, 50, 18"
+               IsVisible="False"
+               FontSize="18" />
+    </StackLayout>
+</controls:BaseContentView>
